@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Avistamiento - Unión de Ornitólogos de Chile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Reportar Avistamiento de Ave</h1>
+    <p>Publicado por la <strong>Unión de Ornitólogos de Chile</strong></p>
+
+    <p><a href="index.html">← Volver al Menú Principal</a></p>
+
+    <form id="form-avistamiento" action="#" method="post" novalidate>
+        
+        <!-- Tipo de ave -->
+        <p>
+            <label for="tipo-ave">Tipo de Ave / Grupo *</label><br>
+            <select id="tipo-ave" name="tipo-ave">
+                <option value="">Seleccione una opción</option>
+                <option value="desconocido">No lo sé / Requiere identificación</option>
+                <option value="jardin-ciudad">Terrestre / Jardín o Ciudad (Ej: Chincol, Zorzal)</option>
+                <option value="marina-costera">Marina / Costera (Ej: Gaviota, Pelícano)</option>
+                <option value="humedal-rio">Humedal / Laguna / Río (Ej: Garza, Tagua)</option>
+                <option value="rapaz">Rapaz / Caza (Ej: Peuco, Cernícalo, Búho)</option>
+                <option value="bosque-cordillera">Bosque / Cordillera (Ej: Carpintero, Cóndor)</option>
+                <option value="otra">Otra categoría</option>
+            </select>
+            <span id="error-tipo-ave" class="mensaje-error"></span>
+        </p>
+
+        <!-- Conoce nombre -->
+        <p>
+            <label>¿Conoces el nombre específico del ave? *</label><br>
+            <input type="radio" id="conoce-si" name="conoce-nombre" value="si">
+            <label for="conoce-si">Sí</label>
+            <input type="radio" id="conoce-no" name="conoce-nombre" value="no" checked>
+            <label for="conoce-no">No (se registrará como "No identificado")</label>
+        </p>
+
+        <!-- Nombre del ave -->
+        <p id="bloque-nombre-ave">
+            <label for="nombre-ave">Nombre del Ave:</label><br>
+            <input type="text" id="nombre-ave" name="nombre-ave" placeholder="Ej: Chincol, Cernícalo" disabled>
+            <span id="error-nombre-ave" class="mensaje-error"></span>
+        </p>
+
+        <!-- Fecha -->
+        <p>
+            <label for="fecha-avistamiento">Fecha *</label><br>
+            <input type="date" id="fecha-avistamiento" name="fecha-avistamiento">
+            <span id="error-fecha" class="mensaje-error"></span>
+        </p>
+
+        <!-- Hora -->
+        <p>
+            <label for="hora-avistamiento">Hora *</label><br>
+            <input type="time" id="hora-avistamiento" name="hora-avistamiento">
+            <span id="error-hora" class="mensaje-error"></span>
+        </p>
+
+        <!-- Región -->
+        <p>
+            <label for="region-avistamiento">Región *</label><br>
+            <select id="region-avistamiento" name="region-avistamiento">
+                <option value="">Seleccione una región</option>
+            </select>
+            <span id="error-region-avistamiento" class="mensaje-error"></span>
+        </p>
+
+        <!-- Ciudad -->
+        <p>
+            <label for="ciudad-avistamiento">Ciudad / Localidad *</label><br>
+            <input type="text" id="ciudad-avistamiento" name="ciudad-avistamiento" placeholder="Ej: San Antonio, Pucón, Cajón del Maipo">
+            <span id="error-ciudad-avistamiento" class="mensaje-error"></span>
+        </p>
+
+        <!-- Comuna -->
+        <p>
+            <label for="comuna-avistamiento">Comuna *</label><br>
+            <select id="comuna-avistamiento" name="comuna-avistamiento" disabled>
+                <option value="">Seleccione primero una región</option>
+            </select>
+            <span id="error-comuna-avistamiento" class="mensaje-error"></span>
+        </p>
+
+        <!-- Dirección -->
+        <p>
+            <label for="direccion-especifica">Dirección específica / Referencia (Opcional):</label><br>
+            <input type="text" id="direccion-especifica" name="direccion-especifica" placeholder="Ej: Av. Las Cumbres 1234, o 'Junto al puente del río'">
+            <span id="error-direccion" class="mensaje-error"></span>
+        </p>
+
+        <!-- Archivo multimedia -->
+        <p>
+            <label for="archivo-multimedia">Fotografía o Video del Avistamiento *</label><br>
+            <input type="file" id="archivo-multimedia" name="archivo-multimedia" accept="image/*,video/*">
+            <span id="error-multimedia" class="mensaje-error"></span>
+        </p>
+
+        <!-- Botones -->
+        <p>
+            <input type="submit" value="Enviar Registro de Avistamiento">
+            <input type="reset" value="Limpiar">
+        </p>
+
+    </form>
+
+    <p><small><strong>Aviso legal:</strong> El material multimedia y los datos de avistamiento publicados en esta plataforma son aportados exclusivamente por personas voluntarias registradas.</small></p>
+    <p><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
+
+    <script src="avistamiento.js"></script>
+</body>
+</html>

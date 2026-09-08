@@ -1,0 +1,113 @@
+
+h1 {
+  font-size: 32px;
+}
+
+h2 {
+  font-size: 26px;
+}
+
+p {
+  font-size: 18px;
+}
+
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #c4ffc4;
+  color: #333;
+  padding: 20px;
+  font-size: 25px;
+}
+
+form {
+  background: #ffffff;
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  font-size: 14px;
+  text-align: left;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+input[type="file"],
+select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+input.input-error,
+select.input-error {
+  border-color: #e88 !important;
+  -webkit-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
+  -moz-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
+  -o-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
+  -ms-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
+  box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
+}
+
+span[id^="error-"] {
+  display: none;
+  color: #e88;
+  font-size: 13px;
+  margin-top: 4px;
+  text-align: left;
+}
+
+span[id^="error-"].visible {
+  display: block;
+}
+
+fieldset {
+  border: 2px solid #2b7a4b; 
+  border-radius: 8px;        
+  padding: 16px;
+  margin-bottom: 5px;
+}

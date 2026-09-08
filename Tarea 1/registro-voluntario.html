@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Voluntario - Unión de Ornitólogos de Chile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Registro de Voluntario(a)</h1>
+    <p>Publicado por la <strong>Unión de Ornitólogos de Chile</strong></p>
+
+    <p><a href="index.html">← Volver al Menú Principal</a></p>
+
+    <form id="form-voluntario" action="#" method="post" novalidate>
+        
+        <!-- Nombres -->
+        <p>
+            <label for="nombres">Nombres *</label><br>
+            <input type="text" id="nombres" name="nombres">
+            <span id="error-nombres" class="mensaje-error"></span>
+        </p>
+
+        <!-- Apellidos -->
+        <p>
+            <label for="apellidos">Apellidos *</label><br>
+            <input type="text" id="apellidos" name="apellidos">
+            <span id="error-apellidos" class="mensaje-error"></span>
+        </p>
+
+        <!-- RUT -->
+        <p>
+            <label for="rut">RUT *</label><br>
+            <input type="text" id="rut" name="rut" placeholder="12345678-9">
+            <span id="error-rut" class="mensaje-error"></span>
+        </p>
+
+        <!-- Fecha de Nacimiento -->
+        <p>
+            <label for="fecha-nacimiento">Fecha de Nacimiento (Opcional):</label><br>
+            <input type="date" id="fecha-nacimiento" name="fecha-nacimiento">
+            <span id="error-fecha" class="mensaje-error"></span>
+        </p>
+
+        <!-- Correo Electrónico -->
+        <p>
+            <label for="email">Correo Electrónico *</label><br>
+            <input type="email" id="email" name="email" placeholder="ejemplo@correo.cl">
+            <span id="error-email" class="mensaje-error"></span>
+        </p>
+
+        <!-- Teléfono -->
+        <p>
+            <label for="telefono">Número de Teléfono *</label><br>
+            <input type="tel" id="telefono" name="telefono" placeholder="+56912345678">
+            <span id="error-telefono" class="mensaje-error"></span>
+        </p>
+
+        <!-- País -->
+        <p>
+            <label for="pais">País *</label><br>
+            <select id="pais" name="pais">
+                <option value="">Seleccione un país</option>
+                <option value="Chile">Chile</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Perú">Perú</option>
+                <option value="Otro">Otro</option>
+            </select>
+            <span id="error-pais" class="mensaje-error"></span>
+        </p>
+
+        <!-- Botones -->
+        <p>
+            <input type="submit" value="Completar Registro">
+            <input type="reset" value="Limpiar">
+        </p>
+
+    </form>
+
+    <p><small><strong>Aviso legal:</strong> El material multimedia y los datos de avistamiento publicados en esta plataforma son aportados exclusivamente por personas voluntarias registradas.</small></p>
+    <p><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
+
+    <script src="voluntario.js"></script>
+</body>
+</html>

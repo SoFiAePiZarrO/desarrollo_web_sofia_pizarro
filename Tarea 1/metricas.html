@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas e Indicadores - Unión de Ornitólogos de Chile</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Métricas e Indicadores de la Plataforma</h1>
+    <p>Publicado por la <strong>Unión de Ornitólogos de Chile</strong></p>
+
+    <p><a href="index.html">← Volver al Menú Principal</a></p>
+
+    <!-- top 5 aves -->
+    <h2>Top 5 Aves Más Vistas</h2>
+    <p>Listado de las especies con mayor número de reportes registrados en la plataforma.</p>
+
+    <p>
+        <strong>1. Chincol (Zonotrichia capensis)</strong><br>
+        <img src="chincol.jpg" alt="Fotografía de un Chincol" width="300"><br>
+        Total avistamientos: 412
+    </p>
+
+    <p>
+        <strong>2. Tenca (Mimus theca)</strong><br>
+        Total avistamientos: 320
+    </p>
+
+    <p>
+        <strong>3. Loica (Leistes loyca)</strong><br>
+        Total avistamientos: 285
+    </p>
+
+    <p>
+        <strong>4. Picaflor Chico (Sephanoides sephaniodes)</strong><br>
+        Total avistamientos: 210
+    </p>
+
+    <p>
+        <strong>5. Queltehue (Vanellus chilensis)</strong><br>
+        Total avistamientos: 195
+    </p>
+
+    <!-- Indicadores por Comuna -->
+    <h2>Indicadores de Avistamientos por Comuna</h2>
+
+    <p>
+        <label for="select-region">Filtrar avistamientos por región:</label><br>
+        <select id="select-region" name="region">
+            <option value="todas">Todas las regiones</option>
+        </select>
+    </p>
+
+    <h3>Top 4 Comunas con Mayor Cantidad de Avistamientos</h3>
+    <p>Santiago: <progress max="150" value="142"></progress> 142</p>
+    <p>Valparaíso: <progress max="150" value="98"></progress> 98</p>
+    <p>Concepción: <progress max="150" value="76"></progress> 76</p>
+    <p>Pucón: <progress max="150" value="54"></progress> 54</p>
+
+    <!-- Indicadores de Voluntarios -->
+    <h2>Indicadores de Voluntarios</h2>
+
+    <h3>Distribución por Nacionalidad de Voluntarios</h3>
+    <p>Chilena (75%): <progress max="100" value="75"></progress> 75%</p>
+    <p>Extranjera (25%): <progress max="100" value="25"></progress> 25%</p>
+
+    <p><small><strong>Aviso legal:</strong> El material multimedia y los datos de avistamiento publicados en esta plataforma son aportados exclusivamente por personas voluntarias registradas.</small></p>
+    <p><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
+
+    <script src="regiones-comunas.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const selectRegion = document.getElementById("select-region");
+
+        if (typeof regionesComunas !== "undefined" && selectRegion) {
+            Object.keys(regionesComunas).forEach(region => {
+                const option = document.createElement("option");
+                option.value = region.toLowerCase().replace(/\s+/g, '-');
+                option.textContent = region;
+                selectRegion.appendChild(option);
+            });
+        }
+    });
+    </script>
+</body>
+</html>

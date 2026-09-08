@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Avistamientos - Unión de Ornitólogos de Chile</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        label, input, select, button {
+            font-size: 18px !important;
+        }
+        h3 {
+            font-size: 22px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Listado de Avistamientos Registrados</h1>
+    <p>Publicado por la <strong>Unión de Ornitólogos de Chile</strong></p>
+
+    <p><a href="index.html">← Volver al Menú Principal</a></p>
+
+    <section class="filtros-container">
+        <h2>Filtrar y Ordenar</h2>
+        
+        <div class="filter-group">
+            <label for="filtro-nombre">Buscar por nombre de ave:</label>
+            <input type="text" id="filtro-nombre" placeholder="Ej: Chincol, Cernícalo...">
+        </div>
+
+        <div class="filter-group">
+            <label for="filtro-tipo">Tipo de Ave:</label>
+            <select id="filtro-tipo">
+                <option value="todos">Todos los tipos</option>
+                <option value="jardin-ciudad">Terrestre / Jardín o Ciudad</option>
+                <option value="marina-costera">Marina / Costera</option>
+                <option value="humedal-rio">Humedal / Laguna / Río</option>
+                <option value="rapaz">Rapaz / Caza</option>
+                <option value="bosque-cordillera">Bosque / Cordillera</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="ordenar-por">Ordenar por:</label>
+            <select id="ordenar-por">
+                <option value="fecha-desc">Fecha (más reciente primero)</option>
+                <option value="fecha-asc">Fecha (más antigua primero)</option>
+                <option value="lugar">Lugar / Comuna (A-Z)</option>
+                <option value="tipo">Tipo de ave (A-Z)</option>
+            </select>
+        </div>
+
+        <button type="button" id="btn-filtrar">Aplicar Filtros</button>
+    </section>
+
+    <h2>Registros Encontrados</h2>
+    
+    <h3>Chincol (Zonotrichia capensis)</h3>
+    <p><strong>Tipo:</strong> Terrestre / Jardín</p>
+    
+    <p>
+        <img src="chincol.jpg" alt="Fotografía de un Chincol" width="300"><br>
+        <small>Foto de un Chincol</small>
+    </p>
+
+    <p><strong>Lugar:</strong> Santiago, Región Metropolitana</p>
+    <p><strong>Dirección:</strong> Parque Metropolitano (Cumbre)</p>
+    <p><strong>Fecha y Hora:</strong> 25/08/2026 a las 10:30 hrs</p>
+
+    <p>Página 1 de 5</p>
+    <p>
+        <a href="#">« Anterior</a> | 
+        <a href="#">1</a> | 
+        <a href="#">2</a> | 
+        <a href="#">3</a> | 
+        <a href="#">Siguiente »</a>
+    </p>
+
+    <p><small><strong>Aviso legal:</strong> El material multimedia y los datos de avistamiento publicados en esta plataforma son aportados exclusivamente por personas voluntarias registradas.</small></p>
+    <p><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
+
+    <script src="regiones-comunas.js"></script>
+    <script src="avistamiento.js"></script>
+</body>
+</html>
