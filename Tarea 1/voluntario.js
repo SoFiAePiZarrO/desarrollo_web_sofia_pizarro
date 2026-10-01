@@ -1,191 +1,253 @@
+const establecerError = (elementoEntrada, elementoError, esValido, mensajeError = "") => {
+  if (!elementoError) return;
 
-const setError = (inputElement, errorElement, isValid, errorMessage) => {
-  if (!errorElement) return;
-
-  if (!isValid) {
-    errorElement.textContent = errorMessage;
-    errorElement.classList.add("visible");
-    if (inputElement) inputElement.classList.add("input-error");
+  if (!esValido) {
+    elementoError.textContent = mensajeError;
+    elementoError.classList.add("visible");
+    if (elementoEntrada) elementoEntrada.classList.add("input-error");
   } else {
-    errorElement.textContent = "";
-    errorElement.classList.remove("visible");
-    if (inputElement) inputElement.classList.remove("input-error");
+    elementoError.textContent = "";
+    elementoError.classList.remove("visible");
+    if (elementoEntrada) elementoEntrada.classList.remove("input-error");
   }
 };
 
-const validateName = (name) => {
-  if (!name) return false;
-  return name.trim().length >= 2;
-};
-
-const validateRUT = (rut) => {
-  if (!rut) return false;
-
-  const cleanRut = rut.replace(/\./g, "").trim();
-  if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(cleanRut)) return false;
-
-  const tmp = cleanRut.split("-");
-  let digv = tmp[1];
-  const rutNum = tmp[0];
-  if (digv === "K") digv = "k";
-
-  let m = 0,
-    s = 1;
-  let t = parseInt(rutNum, 10);
-  for (; t; t = Math.floor(t / 10)) {
-    s = (s + (t % 10) * (9 - (m++ % 6))) % 11;
+// Validar que solo contenga letras, tildes, espacios y ñ (mínimo 2 caracteres)
+const validarNombre = (nombre) => {
+  if (!nombre || nombre.trim().length === 0) {
+    return { esValido: false, mensaje: "Este campo es obligatorio." };
   }
-  const dvEsperado = s ? (s - 1).toString() : "k";
-  return dvEsperado === digv;
+  const textoLimpio = nombre.trim();
+  if (textoLimpio.length < 2) {
+    return { esValido: false, mensaje: "Ingrese un nombre válido." };
+  }
+  const expresionLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+  if (!expresionLetras.test(textoLimpio)) {
+    return { esValido: false, mensaje: "Ingrese un nombre válido." };
+  }
+  return { esValido: true, mensaje: "" };
 };
 
-const validateEmail = (email) => {
-  if (!email) return false;
-  const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regexEmail.test(email.trim());
+// Prevenir código malicioso
+const esEntradaSegura = (texto) => {
+  if (!texto) return true;
+  const caracteresProhibidos = /[<>{}]|javascript:/i;
+  return !caracteresProhibidos.test(texto);
 };
 
-const validatePhone = (phone) => {
-  if (!phone) return false;
-  const regexTelefono = /^(\+?56)?(\s?)(9)(\s?)[0-9]{8}$/;
-  return regexTelefono.test(phone.trim());
+// Validar RUT chileno
+const validarRUT = (rut) => {
+  if (!rut || rut.trim().length === 0) {
+    return { esValido: false, mensaje: "El RUT es obligatorio." };
+  }
+
+  const rutLimpio = rut.replace(/\./g, "").trim();
+  if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test(rutLimpio)) {
+    return { esValido: false, mensaje: "Formato inválido. Ejemplo: 12345678-9" };
+  }
+
+  const partes = rutLimpio.split("-");
+  let digitoVerificador = partes[1];
+  const numeroRut = partes[0];
+  if (digitoVerificador === "K") digitoVerificador = "k";
+
+  let suma = 0;
+  let multiplicador = 2;
+
+  for (let i = numeroRut.length - 1; i >= 0; i--) {
+    suma += parseInt(numeroRut.charAt(i), 10) * multiplicador;
+    multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+  }
+
+  const resto = suma % 11;
+  const digitoEsperadoCalculado = 11 - resto;
+  let digitoEsperado = "";
+
+  if (digitoEsperadoCalculado === 11) {
+    digitoEsperado = "0";
+  } else if (digitoEsperadoCalculado === 10) {
+    digitoEsperado = "k";
+  } else {
+    digitoEsperado = digitoEsperadoCalculado.toString();
+  }
+
+  if (digitoEsperado !== digitoVerificador) {
+    return { esValido: false, mensaje: "El RUT ingresado no es válido." };
+  }
+
+  return { esValido: true, mensaje: "" };
 };
 
-const validateSelect = (value) => {
-  return value !== null && value !== undefined && value.trim() !== "";
+// Validar Fecha de Nacimiento
+const validarFechaNacimiento = (fechaTexto) => {
+  if (!fechaTexto) return { esValido: true, mensaje: "" };
+
+  const fechaNacimiento = new Date(fechaTexto);
+  const fechaActual = new Date();
+  const anioMinimo = 1900;
+
+  if (
+    isNaN(fechaNacimiento.getTime()) ||
+    fechaNacimiento > fechaActual ||
+    fechaNacimiento.getFullYear() < anioMinimo
+  ) {
+    return { esValido: false, mensaje: "Ingrese una fecha válida" };
+  }
+
+  return { esValido: true, mensaje: "" };
+};
+
+// Validar Correo Electrónico
+const validarCorreo = (correo) => {
+  if (!correo || correo.trim().length === 0) {
+    return { esValido: false, mensaje: "El correo electrónico es obligatorio." };
+  }
+  const expresionCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!expresionCorreo.test(correo.trim())) {
+    return { esValido: false, mensaje: "Ingrese un correo válido (ej: usuario@dominio.cl)." };
+  }
+  return { esValido: true, mensaje: "" };
+};
+
+// Validar Teléfono
+const validarTelefono = (telefono) => {
+  if (!telefono || telefono.trim().length === 0) {
+    return { esValido: false, mensaje: "El número de teléfono es obligatorio." };
+  }
+  const expresionTelefono = /^(\+?56)?(\s?)(9)(\s?)[0-9]{8}$/;
+  if (!expresionTelefono.test(telefono.trim())) {
+    return { esValido: false, mensaje: "Ingrese un teléfono válido (ej: +56912345678)." };
+  }
+  return { esValido: true, mensaje: "" };
+};
+
+// Validar Selección de desplegables (Select)
+const validarSeleccion = (valor, nombreCampo) => {
+  if (!valor || valor.trim() === "") {
+    return { esValido: false, mensaje: `Debe seleccionar una opción para ${nombreCampo}.` };
+  }
+  return { esValido: true, mensaje: "" };
 };
 
 // Cargar Regiones y Comunas desde datosUbicacion
 document.addEventListener("DOMContentLoaded", () => {
-  const regionSelect = document.getElementById("region");
-  const comunaSelect = document.getElementById("comuna");
+  const selectorRegion = document.getElementById("region");
+  const selectorComuna = document.getElementById("comuna");
 
-  if (regionSelect && typeof datosUbicacion !== "undefined") {
-    // Cargar regiones
+  if (selectorRegion && typeof datosUbicacion !== "undefined") {
+    // Cargar Regiones
     Object.keys(datosUbicacion).forEach((region) => {
-      const option = document.createElement("option");
-      option.value = region;
-      option.textContent = region;
-      regionSelect.appendChild(option);
+      const opcion = document.createElement("option");
+      opcion.value = region;
+      opcion.textContent = region;
+      selectorRegion.appendChild(opcion);
     });
 
-    // Evento de cambio de región para cargar las comunas correspondientes
-    regionSelect.addEventListener("change", () => {
-      const regionSeleccionada = regionSelect.value;
-
-      // Limpiar el selector de comuna
-      comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+    // Evento para cambiar Comunas según la Región elegida
+    selectorRegion.addEventListener("change", () => {
+      const regionSeleccionada = selectorRegion.value;
+      selectorComuna.innerHTML = '<option value="">Seleccione una comuna</option>';
 
       if (regionSeleccionada && datosUbicacion[regionSeleccionada]) {
         datosUbicacion[regionSeleccionada].forEach((comuna) => {
-          const option = document.createElement("option");
-          option.value = comuna;
-          option.textContent = comuna;
-          comunaSelect.appendChild(option);
+          const opcion = document.createElement("option");
+          opcion.value = comuna;
+          opcion.textContent = comuna;
+          selectorComuna.appendChild(opcion);
         });
       } else {
-        comunaSelect.innerHTML = '<option value="">Seleccione primero una región</option>';
+        selectorComuna.innerHTML = '<option value="">Seleccione primero una región</option>';
       }
     });
   }
 });
 
+// Evento principal al enviar el formulario
 const formulario = document.getElementById("form-voluntario");
 
-const errorNombres = document.getElementById("error-nombres");
-const errorApellidos = document.getElementById("error-apellidos");
-const errorRut = document.getElementById("error-rut");
-const errorEmail = document.getElementById("error-email");
-const errorTelefono = document.getElementById("error-telefono");
-const errorPais = document.getElementById("error-pais");
-const errorRegion = document.getElementById("error-region");
-const errorComuna = document.getElementById("error-comuna");
-
 if (formulario) {
-  formulario.addEventListener("submit", (event) => {
-    event.preventDefault();
+  formulario.addEventListener("submit", (evento) => {
+    evento.preventDefault();
 
-    const nombresInput = document.getElementById("nombres").value;
-    const apellidosInput = document.getElementById("apellidos").value;
-    const rutInput = document.getElementById("rut").value;
-    const emailInput = document.getElementById("email").value;
-    const telefonoInput = document.getElementById("telefono").value;
-    const paisInput = document.getElementById("pais").value;
-    const regionInput = document.getElementById("region") ? document.getElementById("region").value : "";
-    const comunaInput = document.getElementById("comuna") ? document.getElementById("comuna").value : "";
+    // Obtención de elementos del DOM
+    const campoNombres = document.getElementById("nombres");
+    const campoApellidos = document.getElementById("apellidos");
+    const campoRut = document.getElementById("rut");
+    const campoFecha = document.getElementById("fecha-nacimiento");
+    const campoCorreo = document.getElementById("email");
+    const campoTelefono = document.getElementById("telefono");
+    const campoPais = document.getElementById("pais");
+    const campoRegion = document.getElementById("region");
+    const campoComuna = document.getElementById("comuna");
 
-    const esNombreValido = validateName(nombresInput);
-    const esApellidoValido = validateName(apellidosInput);
-    const esRutValido = validateRUT(rutInput);
-    const esEmailValido = validateEmail(emailInput);
-    const esTelefonoValido = validatePhone(telefonoInput);
-    const esPaisValido = validateSelect(paisInput);
-    const esRegionValida = validateSelect(regionInput);
-    const esComunaValida = validateSelect(comunaInput);
+    const errorNombres = document.getElementById("error-nombres");
+    const errorApellidos = document.getElementById("error-apellidos");
+    const errorRut = document.getElementById("error-rut");
+    const errorFecha = document.getElementById("error-fecha");
+    const errorCorreo = document.getElementById("error-email");
+    const errorTelefono = document.getElementById("error-telefono");
+    const errorPais = document.getElementById("error-pais");
+    const errorRegion = document.getElementById("error-region");
+    const errorComuna = document.getElementById("error-comuna");
 
-    if (!esNombreValido && errorNombres) {
-      errorNombres.classList.add("visible");
-    } else if (errorNombres) {
-      errorNombres.classList.remove("visible");
+    // Comprobación rápida de código malicioso en campos de texto
+    const camposTexto = [campoNombres, campoApellidos, campoRut, campoCorreo, campoTelefono];
+    let codigoMaliciosoDetectado = false;
+
+    camposTexto.forEach((campo) => {
+      if (campo && !esEntradaSegura(campo.value)) {
+        codigoMaliciosoDetectado = true;
+      }
+    });
+
+    if (codigoMaliciosoDetectado) {
+      alert("Se han detectado caracteres o símbolos no permitidos en los campos.");
+      return;
     }
 
-    if (!esApellidoValido && errorApellidos) {
-      errorApellidos.classList.add("visible");
-    } else if (errorApellidos) {
-      errorApellidos.classList.remove("visible");
-    }
+    // Validaciones y mensajes de error
+    const resultadoNombres = validarNombre(campoNombres ? campoNombres.value : "");
+    establecerError(campoNombres, errorNombres, resultadoNombres.esValido, resultadoNombres.mensaje);
 
-    if (!esRutValido && errorRut) {
-      errorRut.classList.add("visible");
-    } else if (errorRut) {
-      errorRut.classList.remove("visible");
-    }
+    const resultadoApellidos = validarNombre(campoApellidos ? campoApellidos.value : "");
+    establecerError(campoApellidos, errorApellidos, resultadoApellidos.esValido, resultadoApellidos.mensaje);
 
-    if (!esEmailValido && errorEmail) {
-      errorEmail.classList.add("visible");
-    } else if (errorEmail) {
-      errorEmail.classList.remove("visible");
-    }
+    const resultadoRut = validarRUT(campoRut ? campoRut.value : "");
+    establecerError(campoRut, errorRut, resultadoRut.esValido, resultadoRut.mensaje);
 
-    if (!esTelefonoValido && errorTelefono) {
-      errorTelefono.classList.add("visible");
-    } else if (errorTelefono) {
-      errorTelefono.classList.remove("visible");
-    }
+    const resultadoFecha = validarFechaNacimiento(campoFecha ? campoFecha.value : "");
+    establecerError(campoFecha, errorFecha, resultadoFecha.esValido, resultadoFecha.mensaje);
 
-    if (!esPaisValido && errorPais) {
-      errorPais.classList.add("visible");
-    } else if (errorPais) {
-      errorPais.classList.remove("visible");
-    }
+    const resultadoCorreo = validarCorreo(campoCorreo ? campoCorreo.value : "");
+    establecerError(campoCorreo, errorCorreo, resultadoCorreo.esValido, resultadoCorreo.mensaje);
 
-    if (!esRegionValida && errorRegion) {
-      errorRegion.classList.add("visible");
-    } else if (errorRegion) {
-      errorRegion.classList.remove("visible");
-    }
+    const resultadoTelefono = validarTelefono(campoTelefono ? campoTelefono.value : "");
+    establecerError(campoTelefono, errorTelefono, resultadoTelefono.esValido, resultadoTelefono.mensaje);
 
-    if (!esComunaValida && errorComuna) {
-      errorComuna.classList.add("visible");
-    } else if (errorComuna) {
-      errorComuna.classList.remove("visible");
-    }
+    const resultadoPais = validarSeleccion(campoPais ? campoPais.value : "", "país");
+    establecerError(campoPais, errorPais, resultadoPais.esValido, resultadoPais.mensaje);
+
+    const resultadoRegion = validarSeleccion(campoRegion ? campoRegion.value : "", "región");
+    establecerError(campoRegion, errorRegion, resultadoRegion.esValido, resultadoRegion.mensaje);
+
+    const resultadoComuna = validarSeleccion(campoComuna ? campoComuna.value : "", "comuna");
+    establecerError(campoComuna, errorComuna, resultadoComuna.esValido, resultadoComuna.mensaje);
 
     if (
-      !esNombreValido ||
-      !esApellidoValido ||
-      !esRutValido ||
-      !esEmailValido ||
-      !esTelefonoValido ||
-      !esPaisValido ||
-      !esRegionValida ||
-      !esComunaValida
+      !resultadoNombres.esValido ||
+      !resultadoApellidos.esValido ||
+      !resultadoRut.esValido ||
+      !resultadoFecha.esValido ||
+      !resultadoCorreo.esValido ||
+      !resultadoTelefono.esValido ||
+      !resultadoPais.esValido ||
+      !resultadoRegion.esValido ||
+      !resultadoComuna.esValido
     ) {
       return;
     }
 
     alert("¡Registro de voluntario exitoso!");
-
     formulario.reset();
   });
 }
