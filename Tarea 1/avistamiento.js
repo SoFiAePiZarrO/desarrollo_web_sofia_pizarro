@@ -1,17 +1,16 @@
-
-const validateSelect = (value) => {
-    return value !== null && value !== undefined && value.trim() !== "";
+const validarSeleccion = (valor) => {
+    return valor !== null && valor !== undefined && valor.trim() !== "";
 };
 
-const validateNombreAve = (conoceSi, nombre) => {
-    if (!conoceSi) return true; // Si seleccionó "No", el nombre no es obligatorio
+const validarNombreAve = (conoceSi, nombre) => {
+    if (!conoceSi) return true; // Si eligió "No", no se exige el nombre
     return nombre !== null && nombre !== undefined && nombre.trim().length > 0;
 };
 
-const validateFecha = (fechaInput) => {
-    if (!fechaInput) return false;
+const validarFecha = (fechaTexto) => {
+    if (!fechaTexto) return false;
 
-    const partes = fechaInput.split("-");
+    const partes = fechaTexto.split("-");
     const fechaSeleccionada = new Date(partes[0], partes[1] - 1, partes[2]);
 
     const hoy = new Date();
@@ -21,148 +20,167 @@ const validateFecha = (fechaInput) => {
     haceUnAno.setFullYear(hoy.getFullYear() - 1);
     haceUnAno.setHours(0, 0, 0, 0);
 
-    // Válido solo si está entre hace 1 año y el día de hoy
     return fechaSeleccionada <= hoy && fechaSeleccionada >= haceUnAno;
 };
 
-const validateArchivo = (archivoInput) => {
-    return archivoInput && archivoInput.files && archivoInput.files.length > 0;
+// Validación del archivo
+const validarArchivo = (entradaArchivo) => {
+    if (!entradaArchivo || !entradaArchivo.files || entradaArchivo.files.length === 0) {
+        return { esValido: false, mensaje: "Debe adjuntar una imagen o video." };
+    }
+
+    const archivo = entradaArchivo.files[0];
+    const tipoArchivo = archivo.type; // Ejemplo: 'image/png', 'video/mp4'
+
+    // Formatos permitidos
+    const esImagen = tipoArchivo.startsWith("image/");
+    const esVideo = tipoArchivo.startsWith("video/");
+
+    if (!esImagen && !esVideo) {
+        return { esValido: false, mensaje: "Formato no permitido. Debe subir un archivo de imagen o video." };
+    }
+
+    return { esValido: true, mensaje: "" };
 };
 
-const setError = (element, isValid, message) => {
-    if (!element) return;
-    if (!isValid) {
-        element.textContent = message;
-        element.classList.add("visible");
+const establecerError = (elemento, esValido, mensaje) => {
+    if (!elemento) return;
+    if (!esValido) {
+        elemento.textContent = mensaje;
+        elemento.classList.add("visible");
     } else {
-        element.textContent = "";
-        element.classList.remove("visible");
+        elemento.textContent = "";
+        elemento.classList.remove("visible");
     }
 };
 
+document.addEventListener("DOMContentLoaded", () => {
+    const selectorRegion = document.getElementById("region-avistamiento");
+    const selectorComuna = document.getElementById("comuna-avistamiento");
+    const radioConoceSi = document.getElementById("conoce-si");
+    const radioConoceNo = document.getElementById("conoce-no");
+    const entradaNombreAve = document.getElementById("nombre-ave");
+    const formulario = document.getElementById("form-avistamiento");
 
-const selectRegion = document.getElementById("region-avistamiento");
-const selectComuna = document.getElementById("comuna-avistamiento");
-const radioConoceSi = document.getElementById("conoce-si");
-const radioConoceNo = document.getElementById("conoce-no");
-const inputNombreAve = document.getElementById("nombre-ave");
-const form = document.getElementById("form-avistamiento");
+    // Spans para mostrar mensajes de error
+    const errorTipo = document.getElementById("error-tipo-ave");
+    const errorNombreAve = document.getElementById("error-nombre-ave");
+    const errorFecha = document.getElementById("error-fecha");
+    const errorHora = document.getElementById("error-hora");
+    const errorRegion = document.getElementById("error-region-avistamiento");
+    const errorComuna = document.getElementById("error-comuna-avistamiento");
+    const errorCiudad = document.getElementById("error-ciudad-avistamiento");
+    const errorMultimedia = document.getElementById("error-multimedia");
 
-// Mensajes de error (spans)
-const errorTipo = document.getElementById("error-tipo-ave");
-const errorNombreAve = document.getElementById("error-nombre-ave");
-const errorFecha = document.getElementById("error-fecha");
-const errorHora = document.getElementById("error-hora");
-const errorRegion = document.getElementById("error-region-avistamiento");
-const errorComuna = document.getElementById("error-comuna-avistamiento");
-const errorCiudad = document.getElementById("error-ciudad-avistamiento");
-const errorMultimedia = document.getElementById("error-multimedia");
+    // Carga de regiones y comunas
+    const objetoUbicacion = typeof datosUbicacion !== "undefined" ? datosUbicacion : (typeof regionesComunas !== "undefined" ? regionesComunas : null);
 
-
-const objetoRegiones = typeof regionesComunas !== "undefined" ? regionesComunas : (typeof datosUbicacion !== "undefined" ? datosUbicacion : null);
-
-if (objetoRegiones && selectRegion) {
-    for (let region in objetoRegiones) {
-        const opcion = document.createElement("option");
-        opcion.value = region;
-        opcion.textContent = region;
-        selectRegion.appendChild(opcion);
+    if (objetoUbicacion && selectorRegion) {
+        Object.keys(objetoUbicacion).forEach((region) => {
+            const opcion = document.createElement("option");
+            opcion.value = region;
+            opcion.textContent = region;
+            selectorRegion.appendChild(opcion);
+        });
     }
-}
 
-if (selectRegion && selectComuna) {
-    selectRegion.addEventListener("change", () => {
-        const regionSeleccionada = selectRegion.value;
-        selectComuna.innerHTML = '<option value="">Seleccione una comuna</option>';
+    if (selectorRegion && selectorComuna) {
+        selectorRegion.addEventListener("change", () => {
+            const regionSeleccionada = selectorRegion.value;
+            selectorComuna.innerHTML = '<option value="">Seleccione una comuna</option>';
 
-        if (regionSeleccionada && objetoRegiones && objetoRegiones[regionSeleccionada]) {
-            selectComuna.disabled = false;
-            objetoRegiones[regionSeleccionada].forEach((comuna) => {
-                const opcion = document.createElement("option");
-                opcion.value = comuna;
-                opcion.textContent = comuna;
-                selectComuna.appendChild(opcion);
-            });
-        } else {
-            selectComuna.disabled = true;
-            selectComuna.innerHTML = '<option value="">Seleccione primero una región</option>';
-        }
-    });
-}
-
-
-if (radioConoceSi && radioConoceNo && inputNombreAve) {
-    radioConoceSi.addEventListener("change", () => {
-        if (radioConoceSi.checked) {
-            inputNombreAve.disabled = false;
-            inputNombreAve.focus();
-        }
-    });
-
-    radioConoceNo.addEventListener("change", () => {
-        if (radioConoceNo.checked) {
-            inputNombreAve.disabled = true;
-            inputNombreAve.value = "";
-            if (errorNombreAve) {
-                errorNombreAve.textContent = "";
-                errorNombreAve.classList.remove("visible");
+            if (regionSeleccionada && objetoUbicacion && objetoUbicacion[regionSeleccionada]) {
+                selectorComuna.disabled = false;
+                objetoUbicacion[regionSeleccionada].forEach((comuna) => {
+                    const opcion = document.createElement("option");
+                    opcion.value = comuna;
+                    opcion.textContent = comuna;
+                    selectorComuna.appendChild(opcion);
+                });
+            } else {
+                selectorComuna.disabled = true;
+                selectorComuna.innerHTML = '<option value="">Seleccione primero una región</option>';
             }
-        }
-    });
-}
+        });
+    }
 
+    // Comportamiento del radio button para habilitar/deshabilitar el nombre del ave
+    if (radioConoceSi && radioConoceNo && entradaNombreAve) {
+        radioConoceSi.addEventListener("change", () => {
+            if (radioConoceSi.checked) {
+                entradaNombreAve.disabled = false;
+                entradaNombreAve.focus();
+            }
+        });
 
-if (form) {
-    form.addEventListener("submit", (event) => {
-        event.preventDefault();
+        radioConoceNo.addEventListener("change", () => {
+            if (radioConoceNo.checked) {
+                entradaNombreAve.disabled = true;
+                entradaNombreAve.value = "";
+                if (errorNombreAve) {
+                    errorNombreAve.textContent = "";
+                    errorNombreAve.classList.remove("visible");
+                }
+            }
+        });
+    }
 
-        const tipoInput = document.getElementById("tipo-ave").value;
-        const nombreAveInput = inputNombreAve.value;
-        const fechaInput = document.getElementById("fecha-avistamiento").value;
-        const horaInput = document.getElementById("hora-avistamiento").value;
-        const regionInput = selectRegion.value;
-        const comunaInput = selectComuna.value;
-        const ciudadInput = document.getElementById("ciudad-avistamiento").value;
-        const archivoInput = document.getElementById("archivo-multimedia");
+    // Validación al enviar el formulario
+    if (formulario) {
+        formulario.addEventListener("submit", (evento) => {
+            evento.preventDefault();
 
-        const esTipoValido = validateSelect(tipoInput);
-        const esNombreAveValido = validateNombreAve(radioConoceSi.checked, nombreAveInput);
-        const esFechaValida = validateFecha(fechaInput);
-        const esHoraValida = validateSelect(horaInput);
-        const esRegionValida = validateSelect(regionInput);
-        const esComunaValida = validateSelect(comunaInput);
-        const esCiudadValida = validateSelect(ciudadInput);
-        const esArchivoValido = validateArchivo(archivoInput);
+            const entradaTipo = document.getElementById("tipo-ave").value;
+            const entradaNombre = entradaNombreAve.value;
+            const entradaFecha = document.getElementById("fecha-avistamiento").value;
+            const entradaHora = document.getElementById("hora-avistamiento").value;
+            const entradaRegion = selectorRegion.value;
+            const entradaComuna = selectorComuna.value;
+            const entradaCiudad = document.getElementById("ciudad-avistamiento").value;
+            const entradaArchivo = document.getElementById("archivo-multimedia");
 
-        setError(errorTipo, esTipoValido, "Debe seleccionar un tipo de ave.");
-        setError(errorNombreAve, esNombreAveValido, "Ingrese el nombre del ave.");
-        setError(errorFecha, esFechaValida, "Ingrese una fecha válida (no futura, máx. 1 año atrás).");
-        setError(errorHora, esHoraValida, "Ingrese la hora del avistamiento.");
-        setError(errorRegion, esRegionValida, "Seleccione una región.");
-        setError(errorComuna, esComunaValida, "Seleccione una comuna.");
-        setError(errorCiudad, esCiudadValida, "Ingrese una ciudad o localidad.");
-        setError(errorMultimedia, esArchivoValido, "Debe adjuntar una imagen o video.");
+            const esTipoValido = validarSeleccion(entradaTipo);
+            const esNombreAveValido = validarNombreAve(radioConoceSi.checked, entradaNombre);
+            const esFechaValida = validarFecha(entradaFecha);
+            const esHoraValida = validarSeleccion(entradaHora);
+            const esRegionValida = validarSeleccion(entradaRegion);
+            const esComunaValida = validarSeleccion(entradaComuna);
+            const esCiudadValida = validarSeleccion(entradaCiudad);
+            
+            // Validar existencia y tipo MIME del archivo
+            const resultadoArchivo = validarArchivo(entradaArchivo);
 
-        // Detener el envío si algún campo no es válido
-        if (
-            !esTipoValido ||
-            !esNombreAveValido ||
-            !esFechaValida ||
-            !esHoraValida ||
-            !esRegionValida ||
-            !esComunaValida ||
-            !esCiudadValida ||
-            !esArchivoValido
-        ) {
-            return;
-        }
+            establecerError(errorTipo, esTipoValido, "Debe seleccionar un tipo de ave.");
+            establecerError(errorNombreAve, esNombreAveValido, "Ingrese el nombre del ave.");
+            establecerError(errorFecha, esFechaValida, "Ingrese una fecha válida.");
+            establecerError(errorHora, esHoraValida, "Ingrese la hora del avistamiento.");
+            establecerError(errorRegion, esRegionValida, "Seleccione una región.");
+            establecerError(errorComuna, esComunaValida, "Seleccione una comuna.");
+            establecerError(errorCiudad, esCiudadValida, "Ingrese una ciudad o localidad.");
+            
+            // Establecer el mensaje de error específico según lo devuelto por validarArchivo
+            establecerError(errorMultimedia, resultadoArchivo.esValido, resultadoArchivo.mensaje);
 
-        alert("¡Avistamiento registrado con éxito!");
+            if (
+                !esTipoValido ||
+                !esNombreAveValido ||
+                !esFechaValida ||
+                !esHoraValida ||
+                !esRegionValida ||
+                !esComunaValida ||
+                !esCiudadValida ||
+                !resultadoArchivo.esValido
+            ) {
+                return;
+            }
 
-        // Limpiar el formulario y reiniciar estados
-        form.reset();
-        selectComuna.disabled = true;
-        selectComuna.innerHTML = '<option value="">Seleccione primero una región</option>';
-        inputNombreAve.disabled = true;
-    });
-}
+            alert("¡Avistamiento registrado con éxito!");
+
+            // Limpiar el formulario
+            formulario.reset();
+            selectorComuna.disabled = true;
+            selectorComuna.innerHTML = '<option value="">Seleccione primero una región</option>';
+            entradaNombreAve.disabled = true;
+        });
+    }
+});
