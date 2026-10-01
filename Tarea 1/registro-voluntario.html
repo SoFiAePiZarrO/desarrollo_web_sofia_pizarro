@@ -70,6 +70,24 @@
             <span id="error-pais" class="mensaje-error"></span>
         </p>
 
+        <!-- Región -->
+        <p>
+            <label for="region">Región *</label><br>
+            <select id="region" name="region">
+                <option value="">Seleccione una región</option>
+            </select>
+            <span id="error-region" class="mensaje-error"></span>
+        </p>
+
+        <!-- Comuna -->
+        <p>
+            <label for="comuna">Comuna *</label><br>
+            <select id="comuna" name="comuna">
+                <option value="">Seleccione primero una región</option>
+            </select>
+            <span id="error-comuna" class="mensaje-error"></span>
+        </p>
+
         <!-- Botones -->
         <p>
             <input type="submit" value="Completar Registro">
@@ -81,6 +99,9 @@
     <p><small><strong>Aviso legal:</strong> El material multimedia y los datos de avistamiento publicados en esta plataforma son aportados exclusivamente por personas voluntarias registradas.</small></p>
     <p><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
 
+    <!-- Archivo con el objeto/array de regiones y comunas -->
+    <script src="regiones-comunas.js"></script>
+    <!-- Archivo principal de validación de voluntario -->
     <script src="voluntario.js"></script>
 </body>
 </html>

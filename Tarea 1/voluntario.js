@@ -55,6 +55,41 @@ const validateSelect = (value) => {
   return value !== null && value !== undefined && value.trim() !== "";
 };
 
+// Cargar Regiones y Comunas desde datosUbicacion
+document.addEventListener("DOMContentLoaded", () => {
+  const regionSelect = document.getElementById("region");
+  const comunaSelect = document.getElementById("comuna");
+
+  if (regionSelect && typeof datosUbicacion !== "undefined") {
+    // Cargar regiones
+    Object.keys(datosUbicacion).forEach((region) => {
+      const option = document.createElement("option");
+      option.value = region;
+      option.textContent = region;
+      regionSelect.appendChild(option);
+    });
+
+    // Evento de cambio de región para cargar las comunas correspondientes
+    regionSelect.addEventListener("change", () => {
+      const regionSeleccionada = regionSelect.value;
+
+      // Limpiar el selector de comuna
+      comunaSelect.innerHTML = '<option value="">Seleccione una comuna</option>';
+
+      if (regionSeleccionada && datosUbicacion[regionSeleccionada]) {
+        datosUbicacion[regionSeleccionada].forEach((comuna) => {
+          const option = document.createElement("option");
+          option.value = comuna;
+          option.textContent = comuna;
+          comunaSelect.appendChild(option);
+        });
+      } else {
+        comunaSelect.innerHTML = '<option value="">Seleccione primero una región</option>';
+      }
+    });
+  }
+});
+
 const formulario = document.getElementById("form-voluntario");
 
 const errorNombres = document.getElementById("error-nombres");
@@ -63,6 +98,8 @@ const errorRut = document.getElementById("error-rut");
 const errorEmail = document.getElementById("error-email");
 const errorTelefono = document.getElementById("error-telefono");
 const errorPais = document.getElementById("error-pais");
+const errorRegion = document.getElementById("error-region");
+const errorComuna = document.getElementById("error-comuna");
 
 if (formulario) {
   formulario.addEventListener("submit", (event) => {
@@ -74,6 +111,8 @@ if (formulario) {
     const emailInput = document.getElementById("email").value;
     const telefonoInput = document.getElementById("telefono").value;
     const paisInput = document.getElementById("pais").value;
+    const regionInput = document.getElementById("region") ? document.getElementById("region").value : "";
+    const comunaInput = document.getElementById("comuna") ? document.getElementById("comuna").value : "";
 
     const esNombreValido = validateName(nombresInput);
     const esApellidoValido = validateName(apellidosInput);
@@ -81,6 +120,8 @@ if (formulario) {
     const esEmailValido = validateEmail(emailInput);
     const esTelefonoValido = validatePhone(telefonoInput);
     const esPaisValido = validateSelect(paisInput);
+    const esRegionValida = validateSelect(regionInput);
+    const esComunaValida = validateSelect(comunaInput);
 
     if (!esNombreValido && errorNombres) {
       errorNombres.classList.add("visible");
@@ -118,13 +159,27 @@ if (formulario) {
       errorPais.classList.remove("visible");
     }
 
+    if (!esRegionValida && errorRegion) {
+      errorRegion.classList.add("visible");
+    } else if (errorRegion) {
+      errorRegion.classList.remove("visible");
+    }
+
+    if (!esComunaValida && errorComuna) {
+      errorComuna.classList.add("visible");
+    } else if (errorComuna) {
+      errorComuna.classList.remove("visible");
+    }
+
     if (
       !esNombreValido ||
       !esApellidoValido ||
       !esRutValido ||
       !esEmailValido ||
       !esTelefonoValido ||
-      !esPaisValido
+      !esPaisValido ||
+      !esRegionValida ||
+      !esComunaValida
     ) {
       return;
     }
