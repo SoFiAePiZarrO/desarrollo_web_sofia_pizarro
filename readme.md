@@ -1,0 +1,1 @@
+Como gráfico usé la etiqueta nativa de HTML (<progress>) y tuve muchos problemas para conectar los .js a los formularios.

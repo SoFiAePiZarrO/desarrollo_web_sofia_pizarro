@@ -12,6 +12,32 @@
         h3 {
             font-size: 22px;
         }
+        /* Estilos básicos para la tabla de avistamientos */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr.fila-avistamiento {
+            cursor: pointer;
+        }
+        tr.fila-avistamiento:hover {
+            background-color: #f9f9f9;
+        }
+        .imagen-tabla {
+            max-width: 100px;
+            height: auto;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -56,18 +82,40 @@
 
     <h2>Registros Encontrados</h2>
     
-    <h3>Chincol (Zonotrichia capensis)</h3>
-    <p><strong>Tipo:</strong> Terrestre / Jardín</p>
-    
-    <p>
-        <img src="chincol.jpg" alt="Fotografía de un Chincol" width="300"><br>
-        <small>Foto de un Chincol</small>
-    </p>
+    <!-- Tabla de Avistamientos -->
+    <table id="tabla-avistamientos">
+        <thead>
+            <tr>
+                <th>Vista Previa</th>
+                <th>Nombre del Ave</th>
+                <th>Tipo</th>
+                <th>Lugar / Comuna</th>
+                <th>Fecha y Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fila-avistamiento" data-id="1">
+                <td>
+                    <img src="chincol.jpg" alt="Fotografía de un Chincol" class="imagen-tabla">
+                </td>
+                <td><strong>Chincol</strong> <em>(Zonotrichia capensis)</em></td>
+                <td>Terrestre / Jardín</td>
+                <td>Santiago, Región Metropolitana</td>
+                <td>25/08/2026 10:30 hrs</td>
+            </tr>
+            <tr class="fila-avistamiento" data-id="2">
+                <td>
+                    <img src="cernicalo.jpg" alt="Fotografía de un Cernícalo" class="imagen-tabla">
+                </td>
+                <td><strong>Cernícalo</strong> <em>(Falco sparverius)</em></td>
+                <td>Rapaz / Caza</td>
+                <td>Valparaíso, Región de Valparaíso</td>
+                <td>24/08/2026 16:15 hrs</td>
+            </tr>
+        </tbody>
+    </table>
 
-    <p><strong>Lugar:</strong> Santiago, Región Metropolitana</p>
-    <p><strong>Dirección:</strong> Parque Metropolitano (Cumbre)</p>
-    <p><strong>Fecha y Hora:</strong> 25/08/2026 a las 10:30 hrs</p>
-
+    <!-- Paginación -->
     <p>Página 1 de 5</p>
     <p>
         <a href="#">« Anterior</a> | 
