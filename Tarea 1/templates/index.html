@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avistamiento de Aves - Unión de Ornitólogos de Chile</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
@@ -18,7 +18,7 @@
     <fieldset>
         <legend><h3>Registro de Voluntario</h3></legend>
         <p>Inscríbete como voluntario para colaborar con el reporte de aves en tu región.</p>
-        <h4><a href="registro-voluntario.html">Ir al Registro</a></h4>
+        <h4><a href="{{ url_for('registrar_voluntario') }}">Ir al Registro</a></h4>
     </fieldset>
 
     <br>
@@ -26,7 +26,7 @@
     <fieldset>
         <legend><h3>Informar Avistamiento</h3></legend>
         <p>Reporta el avistamiento de un ave indicando lugar, fecha, hora y multimedia.</p>
-        <h4><a href="registrar-avistamiento.html">Reportar Avistamiento</a></h4>
+        <h4><a href="{{ url_for('registrar_avistamiento') }}">Reportar Avistamiento</a></h4>
     </fieldset>
 
     <br>
@@ -34,7 +34,7 @@
     <fieldset>
         <legend><h3>Listado de Avistamientos</h3></legend>
         <p>Consulta y filtra los avistamientos registrados por tipo de ave o lugar.</p>
-        <h4><a href="ver-avistamientos.html">Ver Listado</a></h4>
+        <h4><a href="{{ url_for('ver_avistamientos') }}">Ver Listado</a></h4>
     </fieldset>
 
     <br>
@@ -42,7 +42,7 @@
     <fieldset>
         <legend><h3>Indicadores y Métricas</h3></legend>
         <p>Revisa los gráficos y estadísticas de voluntarios y avistamientos en Chile.</p>
-        <h4><a href="metricas.html">Ver Métricas</a></h4>
+        <h4><a href="{{ url_for('metricas') }}">Ver Métricas</a></h4>
     </fieldset>
 
     <hr>
