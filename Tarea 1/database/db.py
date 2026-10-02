@@ -156,3 +156,12 @@ def get_avistamientos():
     avistamientos = session.query(Avistamiento).all()
     session.close()
     return avistamientos
+
+def get_ultimos_avistamientos(limite=2):
+    session = SessionLocal()
+    try:
+        # extrae los últimos avistamientos ordenados por ID o fecha descendente
+        avistamientos = session.query(Avistamiento).order_by(Avistamiento.id.desc()).limit(limite).all()
+        return avistamientos
+    finally:
+        session.close()

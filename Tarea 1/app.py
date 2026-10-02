@@ -20,10 +20,10 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # --- RUTAS DE LA APLICACIÓN ---
 
-@app.route("/", methods=["GET"])
+@app.route("/")
 def index():
-    """Página de inicio (Menú principal)"""
-    return render_template("index.html")
+    ultimos_avistamientos = db.get_ultimos_avistamientos(limite=2)
+    return render_template("index.html", avistamientos=ultimos_avistamientos)
 
 
 @app.route("/registro-voluntario", methods=["GET", "POST"])

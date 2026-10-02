@@ -5,44 +5,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avistamiento de Aves - Unión de Ornitólogos de Chile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .bienvenida-texto {
+            font-size: 15px;
+            color: #4a5568;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .menu-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .menu-block {
+            flex: 1;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .menu-block h3 {
+            margin-top: 0;
+            color: #1b5e20;
+        }
+        .button-wrapper {
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
 
     <h1>Sistema de gestión y registro de avistamientos de aves en Chile</h1>
-    <h2>Publicado por la Unión de Ornitólogos de Chile</h2>
+    
+    <!-- Texto de bienvenida en lugar del subtítulo -->
+    <p class="bienvenida-texto">
+        Bienvenido al sitio de la Unión de Ornitólogos de Chile. Aquí puedes inscribirte como voluntario y registrar los avistamientos de aves que encuentres en tu zona.
+    </p>
 
     <hr>
 
+    <!-- Bloque de mensajes flash de Flask -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <p><strong>{{ message }}</strong></p>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <h2>Menú Principal</h2>
 
+    <!-- Bloques verticales uno al lado del otro -->
+    <div class="menu-container">
+        
+        <fieldset class="menu-block">
+            <div>
+                <h3>Registrar Voluntario</h3>
+                <p>Inscríbete como voluntario para colaborar con el reporte de aves en tu región.</p>
+            </div>
+            <div class="button-wrapper">
+                <h4><a href="{{ url_for('registro_voluntario') }}">Ir al Registro</a></h4>
+            </div>
+        </fieldset>
+
+        <fieldset class="menu-block">
+            <div>
+                <h3>Informar Avistamiento</h3>
+                <p>Reporta el avistamiento de un ave indicando lugar, fecha, hora y multimedia.</p>
+            </div>
+            <div class="button-wrapper">
+                <h4><a href="{{ url_for('registrar_avistamiento') }}">Reportar Avistamiento</a></h4>
+            </div>
+        </fieldset>
+
+        <fieldset class="menu-block">
+            <div>
+                <h3>Estadísticas</h3>
+                <p>Revisa los indicadores de los avistamientos o explora el listado completo de registros.</p>
+            </div>
+            <div class="button-wrapper">
+                <h4><a href="{{ url_for('metricas') }}">Ver Métricas</a></h4>
+                <p style="margin-top: 8px;"><small><a href="{{ url_for('ver_avistamientos') }}">Ver listado completo</a></small></p>
+            </div>
+        </fieldset>
+
+    </div>
+
+    <!-- Sección de Últimos Avistamientos -->
     <fieldset>
-        <legend><h3>Registro de Voluntario</h3></legend>
-        <p>Inscríbete como voluntario para colaborar con el reporte de aves en tu región.</p>
-        <h4><a href="{{ url_for('registro_voluntario') }}">Ir al Registro</a></h4>
-    </fieldset>
-
-    <br>
-
-    <fieldset>
-        <legend><h3>Informar Avistamiento</h3></legend>
-        <p>Reporta el avistamiento de un ave indicando lugar, fecha, hora y multimedia.</p>
-        <h4><a href="{{ url_for('registrar_avistamiento') }}">Reportar Avistamiento</a></h4>
-    </fieldset>
-
-    <br>
-
-    <fieldset>
-        <legend><h3>Listado de Avistamientos</h3></legend>
-        <p>Consulta y filtra los avistamientos registrados por tipo de ave o lugar.</p>
-        <h4><a href="{{ url_for('ver_avistamientos') }}">Ver Listado</a></h4>
-    </fieldset>
-
-    <br>
-
-    <fieldset>
-        <legend><h3>Indicadores y Métricas</h3></legend>
-        <p>Revisa los gráficos y estadísticas de voluntarios y avistamientos en Chile.</p>
-        <h4><a href="{{ url_for('metricas') }}">Ver Métricas</a></h4>
+        <h3>Últimos Avistamientos Ingresados</h3>
+        {% if avistamientos %}
+            <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; text-align: left; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f0fdf4;">
+                        <th>Fecha y Hora</th>
+                        <th>Ave</th>
+                        <th>Lugar / Comuna</th>
+                        <th>Voluntario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for av in avistamientos %}
+                        <tr>
+                            <td>{{ av.fecha_hora.strftime('%d/%m/%Y %H:%M') if av.fecha_hora else 'N/I' }}</td>
+                            <td>{{ av.ave.nombre_comun if av.ave else 'Desconocida' }}</td>
+                            <td>{{ av.comuna.nombre if av.comuna else av.lugar }}</td>
+                            <td>{{ av.voluntario.nombre if av.voluntario else 'Anónimo' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p><em>No hay avistamientos registrados recientemente.</em></p>
+        {% endif %}
     </fieldset>
 
     <hr>

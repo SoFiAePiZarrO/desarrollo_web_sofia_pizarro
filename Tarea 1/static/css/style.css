@@ -1,32 +1,78 @@
+/* 0. Importar Hanken Grotesk desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&display=swap');
+
+/* 1. Tipografía, Fondo y Tamaños Generales */
+body {
+  font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  background-color: #edf7ed; /* Verde pastel suave */
+  color: #2c3e50;
+  padding: 20px;
+  font-size: 16px;
+  line-height: 1.5;
+}
 
 h1 {
-  font-size: 32px;
+  font-size: 28px;
+  color: #1b5e20;
 }
 
 h2 {
-  font-size: 26px;
+  font-size: 22px;
+  color: #2e7d32;
 }
 
 p {
-  font-size: 18px;
+  font-size: 15px;
 }
 
-
-body {
-  font-family: Arial, sans-serif;
-  background-color: #c4ffc4;
-  color: #333;
-  padding: 20px;
-  font-size: 25px;
+/* 2. Estilo y Color de los Enlaces (Links) */
+a {
+  color: #2e7d32;
+  text-decoration: none;
+  font-weight: 600;
 }
 
+a:hover {
+  color: #1b5e20;
+  text-decoration: underline;
+}
+
+/* 3. Bloques del Menú y Tarjetas (fieldset) */
+fieldset {
+  border: 2px solid #a5d6a7; 
+  border-radius: 8px;        
+  padding: 18px;
+  margin-bottom: 15px;
+  background-color: #ffffff;
+}
+
+/* Botones en los bloques del menú principal */
+.menu-block h4 a {
+  display: inline-block;
+  background-color: #2e7d32;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.menu-block h4 a:hover {
+  background-color: #1b5e20;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* 4. Estilos para Formularios e Inputs */
 form {
   background: #ffffff;
   max-width: 450px;
   margin: 0 auto;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
 }
@@ -39,7 +85,7 @@ form {
 }
 
 label {
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 6px;
   font-size: 14px;
   text-align: left;
@@ -58,44 +104,43 @@ select {
   font-size: 14px;
   width: 100%;
   box-sizing: border-box;
+  font-family: inherit; /* Hereda Hanken Grotesk */
 }
 
 input:focus,
 select:focus {
-  border-color: #007bff;
+  border-color: #2e7d32;
   outline: none;
 }
 
 button[type="submit"] {
   width: 100%;
   padding: 12px;
-  background-color: #007bff;
+  background-color: #2e7d32;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   margin-top: 10px;
+  font-family: inherit;
 }
 
 button[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: #1b5e20;
 }
 
+/* 5. Validaciones y Mensajes de Error */
 input.input-error,
 select.input-error {
-  border-color: #e88 !important;
-  -webkit-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
-  -moz-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
-  -o-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
-  -ms-box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
-  box-shadow: 0 0 5px rgba(255, 0, 0, .8) !important;
+  border-color: #d32f2f !important;
+  box-shadow: 0 0 4px rgba(211, 47, 47, 0.5) !important;
 }
 
 span[id^="error-"] {
   display: none;
-  color: #e88;
+  color: #d32f2f;
   font-size: 13px;
   margin-top: 4px;
   text-align: left;
@@ -103,11 +148,4 @@ span[id^="error-"] {
 
 span[id^="error-"].visible {
   display: block;
-}
-
-fieldset {
-  border: 2px solid #2b7a4b; 
-  border-radius: 8px;        
-  padding: 16px;
-  margin-bottom: 5px;
 }
