@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 
-# Configuración con credenciales de la Tarea 2
+# credenciales
 DB_NAME = "tarea2"
 DB_USERNAME = "cc5002"
 DB_PASSWORD = "programacionweb"
@@ -15,7 +15,6 @@ SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
 
-# --- Modelos ORM (Mapeo de tablas de tarea2.sql) ---
 
 class Region(Base):
     __tablename__ = 'region'
@@ -125,7 +124,7 @@ def get_voluntarios():
     session.close()
     return voluntarios
 
-def create_avistamiento(voluntario_id, ave_id, fecha_hora, lugar, descripcion, ruta_archivo=None, nombre_archivo=None):
+def create_avistamiento(voluntario_id, ave_id, fecha_hora, lugar, descripcion, archivos=None):
     session = SessionLocal()
     new_av = Avistamiento(
         voluntario_id=voluntario_id,
@@ -135,18 +134,22 @@ def create_avistamiento(voluntario_id, ave_id, fecha_hora, lugar, descripcion, r
         descripcion=descripcion
     )
     session.add(new_av)
-    session.commit()
+    session.commit()  # Genera new_av.id automáticamente
 
-    if ruta_archivo and nombre_archivo:
-        new_reg = Registro(
-            ruta_archivo=ruta_archivo,
-            nombre_archivo=nombre_archivo,
-            avistamiento_id=new_av.id
-        )
-        session.add(new_reg)
+    # Insertar múltiples registros en la tabla 'registro'
+    if archivos:
+        for arch in archivos:
+            new_reg = Registro(
+                ruta_archivo=arch["ruta_archivo"],
+                nombre_archivo=arch["nombre_archivo"],
+                avistamiento_id=new_av.id
+            )
+            session.add(new_reg)
         session.commit()
 
     session.close()
+    return new_av
+
 
 def get_avistamientos():
     session = SessionLocal()
