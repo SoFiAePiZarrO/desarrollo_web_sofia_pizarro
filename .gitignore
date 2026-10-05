@@ -1,0 +1,10 @@
+# Entorno virtual
+Tarea 1/venv/
+
+# Archivos subidos por los usuarios
+Tarea 1/static/uploads/*
+!Tarea 1/static/uploads/.gitkeep
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
