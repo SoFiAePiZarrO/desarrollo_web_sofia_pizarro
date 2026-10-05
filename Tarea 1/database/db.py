@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload
 
 # credenciales
 DB_NAME = "tarea2"
@@ -87,26 +87,31 @@ class Registro(Base):
 
 # --- Database Functions ---
 
+# Pide a la base de datos todas las aves para el registro de avistamientos
 def get_aves():
     session = SessionLocal()
     aves = session.query(Ave).order_by(Ave.nombre.asc()).all()
     session.close()
     return aves
 
+# Pide a la base de datos todas las regiones para el registro de voluntarios
 def get_regiones():
     session = SessionLocal()
     regiones = session.query(Region).order_by(Region.nombre.asc()).all()
     session.close()
     return regiones
 
+# Pide a la base de datos las comunas asociadas a la región seleccionada
 def get_comunas_by_region(region_id):
     session = SessionLocal()
     comunas = session.query(Comuna).filter_by(region_id=region_id).order_by(Comuna.nombre.asc()).all()
     session.close()
     return comunas
 
+# Crea un nuevo voluntario en la base de datos
 def create_voluntario(nombre, email, telefono, fecha_registro, comuna_id):
     session = SessionLocal()
+
     new_vol = Voluntario(
         nombre=nombre,
         email=email,
@@ -114,16 +119,24 @@ def create_voluntario(nombre, email, telefono, fecha_registro, comuna_id):
         fecha_registro=fecha_registro,
         comuna_id=comuna_id
     )
+
     session.add(new_vol)
     session.commit()
+    session.refresh(new_vol)
+
+    session.expunge(new_vol)
     session.close()
 
+    return new_vol
+
+# Pide a la base de datos todos los voluntarios para el registro de avistamientos
 def get_voluntarios():
     session = SessionLocal()
     voluntarios = session.query(Voluntario).all()
     session.close()
     return voluntarios
 
+# Crea un nuevo avistamiento en la base de datos, junto con sus registros asociados
 def create_avistamiento(voluntario_id, ave_id, fecha_hora, lugar, descripcion, archivos=None):
     session = SessionLocal()
     new_av = Avistamiento(
@@ -151,17 +164,54 @@ def create_avistamiento(voluntario_id, ave_id, fecha_hora, lugar, descripcion, a
     return new_av
 
 
-def get_avistamientos():
+# Pide a la base de datos los avistamientos registrados, paginando los resultados
+def get_avistamientos_paginados(pagina=1, por_pagina=5):
     session = SessionLocal()
-    avistamientos = session.query(Avistamiento).all()
-    session.close()
-    return avistamientos
 
-def get_ultimos_avistamientos(limite=2):
-    session = SessionLocal()
     try:
-        # extrae los últimos avistamientos ordenados por ID o fecha descendente
-        avistamientos = session.query(Avistamiento).order_by(Avistamiento.id.desc()).limit(limite).all()
+        query = (
+            session.query(Avistamiento)
+            .options(
+                joinedload(Avistamiento.ave),
+                joinedload(Avistamiento.voluntario),
+                joinedload(Avistamiento.registros)
+            )
+            .order_by(Avistamiento.id.desc())
+        )
+
+        total = query.count()
+
+        avistamientos = (
+            query
+            .offset((pagina - 1) * por_pagina)
+            .limit(por_pagina)
+            .all()
+        )
+
+        return avistamientos, total
+
+    finally:
+        session.close()
+
+
+# Pide a la base de datos los últimos avistamientos registrados, limitando la cantidad a 2 por enunciado
+def get_ultimos_avistamientos(limite=2): 
+    session = SessionLocal()
+
+    try:
+        avistamientos = (
+            session.query(Avistamiento)
+            .options(
+                joinedload(Avistamiento.ave),
+                joinedload(Avistamiento.voluntario),
+                joinedload(Avistamiento.registros)
+            )
+            .order_by(Avistamiento.id.desc())
+            .limit(limite)
+            .all()
+        )
+
         return avistamientos
+
     finally:
         session.close()

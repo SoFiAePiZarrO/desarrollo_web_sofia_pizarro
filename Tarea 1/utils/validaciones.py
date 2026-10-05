@@ -1,10 +1,11 @@
 import re
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
+# valida los datos recibidos del formulario de registro de voluntario 
+# y retorna una lista de cadenas con los errores encontrados.
 def validar_voluntario(form_data):
-    """
-    Valida los datos recibidos del formulario de registro de voluntario.
-    Retorna una lista de cadenas con los errores encontrados.
-    """
+
     errores = []
 
     nombre = form_data.get("nombre", "").strip()
@@ -41,11 +42,10 @@ def validar_voluntario(form_data):
     return errores
 
 
+# valida los datos recibidos del formulario de registro de avistamiento
+# y retorna una lista de cadenas con los errores encontrados.
 def validar_avistamiento(form_data, file_data):
-    """
-    Valida los datos recibidos del formulario de avistamiento.
-    Retorna una lista de cadenas con los errores encontrados.
-    """
+
     errores = []
 
     voluntario_id = form_data.get("voluntario_id", "").strip()
@@ -64,13 +64,37 @@ def validar_avistamiento(form_data, file_data):
     # validacion fecha y hora
     if not fecha_hora:
         errores.append("La fecha y hora del avistamiento son obligatorias.")
+    else:
+        try:
+            fecha_seleccionada = datetime.strptime(
+                fecha_hora,
+                "%Y-%m-%dT%H:%M"
+            )
+
+            ahora = datetime.now()
+            hace_un_mes = ahora - relativedelta(months=1)
+
+            if fecha_seleccionada > ahora:
+                errores.append(
+                    "La fecha del avistamiento no puede ser futura."
+                )
+
+            elif fecha_seleccionada < hace_un_mes:
+                errores.append(
+                    "El avistamiento no puede tener más de un mes de antigüedad."
+                )
+
+        except ValueError:
+            errores.append(
+                "La fecha y hora ingresadas no tienen un formato válido."
+            )
 
     # validacion lugar
     if not lugar:
         errores.append("El lugar del avistamiento es obligatorio.")
 
-    # validar archivo adjunto (fotografía o vídeo)
-    if not file_data or file_data.filename == "":
+    # validar archivos adjuntos (fotografías o vídeos)
+    if not file_data or all(file.filename == "" for file in file_data):
         errores.append("Debe adjuntar una fotografía o vídeo del avistamiento.")
 
     return errores

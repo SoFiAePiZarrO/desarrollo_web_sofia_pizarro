@@ -6,6 +6,7 @@ import hashlib
 import filetype
 import os
 from datetime import datetime
+from flask import jsonify
 
 UPLOAD_FOLDER = 'static/uploads'
 
@@ -20,12 +21,16 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 # --- RUTAS DE LA APLICACIÓN ---
 
-@app.route("/")
+# Pide a la base de datos los últimos avistamientos registrados, limitando la cantidad a 2 por enunciado
+@app.route("/") 
 def index():
-    ultimos_avistamientos = db.get_ultimos_avistamientos(limite=2)
-    return render_template("index.html", avistamientos=ultimos_avistamientos)
+    ultimos_avistamientos = db.get_ultimos_avistamientos(limite=2) 
+    return render_template("index.html", avistamientos=ultimos_avistamientos) # Se publica el template index.html con los ultimos dos avistamientos
 
 
+# Envía los datos del formulario de registro de voluntario a la base de datos,
+# si hay errores de validación, se re-renderiza el formulario con los errores 
+# y los datos previamente ingresados
 @app.route("/registro-voluntario", methods=["GET", "POST"])
 def registro_voluntario():
     if request.method == "POST":
@@ -76,7 +81,7 @@ def registro_voluntario():
 @app.route("/registrar-avistamiento", methods=["GET", "POST"])
 def registrar_avistamiento():
     if request.method == "POST":
-
+        
         archivos = request.files.getlist("archivo-multimedia")
 
         # validacion datos del lado del servidor (utils/validaciones.py)
@@ -156,12 +161,21 @@ def registrar_avistamiento():
 
 @app.route("/ver-avistamientos", methods=["GET"])
 def ver_avistamientos():
-    avistamientos_db = db.get_avistamientos()
+    pagina = request.args.get("pagina", 1, type=int)
+    por_pagina = 5
 
+    if pagina < 1:
+        pagina = 1
+
+    avistamientos_db, total = db.get_avistamientos_paginados(pagina=pagina, por_pagina=por_pagina)
+    total_paginas = (total + por_pagina - 1) // por_pagina
     data = []
+
     for av in avistamientos_db:
-        # extrae todas las rutas multimedia asociadas en la tabla 'registro'
-        archivos_urls = [url_for('static', filename=reg.ruta_archivo) for reg in av.registros]
+        archivos_urls = [
+            url_for("static", filename=reg.ruta_archivo)
+            for reg in av.registros
+        ]
 
         data.append({
             "id": av.id,
@@ -173,12 +187,29 @@ def ver_avistamientos():
             "archivos": archivos_urls
         })
 
-    return render_template("ver-avistamientos.html", data=data)
+    return render_template(
+        "ver-avistamientos.html",
+        data=data,
+        pagina=pagina,
+        total_paginas=total_paginas
+    )
 
 @app.route("/metricas", methods=["GET"])
 def metricas():
     return render_template("metricas.html")
 
+# Pide a la base de datos las comunas asociadas a la región seleccionada
+@app.route("/get-comunas/<int:region_id>")
+def get_comunas(region_id):
+    comunas = db.get_comunas_by_region(region_id)
+    
+    # Convertimos los objetos de la base de datos a una lista en formato JSON para JavaScript
+    return jsonify([
+        {
+            "id": c.id, 
+            "nombre": c.nombre
+        } for c in comunas
+    ])
 
 if __name__ == "__main__":
     app.run(debug=True)
