@@ -215,3 +215,22 @@ def get_ultimos_avistamientos(limite=2):
 
     finally:
         session.close()
+
+# Pide a la base de datos un voluntario específico según su nombre y correo electrónico
+def get_voluntario_by_nombre_email(nombre, email):
+    session = SessionLocal()
+
+    try:
+        voluntario = (
+            session.query(Voluntario)
+            .filter(
+                Voluntario.nombre == nombre,
+                Voluntario.email == email
+            )
+            .first()
+        )
+
+        return voluntario
+
+    finally:
+        session.close()

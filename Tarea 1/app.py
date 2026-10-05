@@ -87,25 +87,39 @@ def registrar_avistamiento():
         # validacion datos del lado del servidor (utils/validaciones.py)
         errores = validar_avistamiento(request.form, archivos)
 
+        # buscar voluntario según nombre y correo ingresados
+        nombre_voluntario = request.form.get("nombre_voluntario", "").strip()
+        email_voluntario = request.form.get("email_voluntario", "").strip()
+
+        voluntario = db.get_voluntario_by_nombre_email(
+            nombre_voluntario,
+            email_voluntario
+        )
+
+        # verificar que el voluntario esté registrado
+        if voluntario is None:
+            errores.append(
+                "No existe un voluntario registrado con ese nombre y correo electrónico."
+            )
+
         # si existen errores de validación, re-renderizar manteniendo visible el formulario
         if errores:
             aves = db.get_aves()
-            voluntarios = db.get_voluntarios()
             return render_template(
                 "registrar-avistamiento.html",
                 aves=aves,
-                voluntarios=voluntarios,
                 errores=errores,
                 datos_previos=request.form
             )
 
         try:
-            # procesar fecha y hora 'YYYY-MM-THH:MM'
+            # procesar fecha y hora 'YYYY-MM-DDTHH:MM'
             fecha_hora_str = request.form.get("fecha_hora")
             fecha_hora = datetime.strptime(fecha_hora_str, "%Y-%m-%dT%H:%M") if fecha_hora_str else datetime.now()
 
             # procesar y guardar cada archivo multimedia 
             archivos_procesados = []
+
             for file in archivos:
                 if file and file.filename != "":
                     # Sanitizar y generar un hash SHA256 único
@@ -123,6 +137,7 @@ def registrar_avistamiento():
 
                     # Guardar la ruta relativa que se registrará en MySQL
                     relative_path = f"uploads/{img_filename}"
+
                     archivos_procesados.append({
                         "ruta_archivo": relative_path,
                         "nombre_archivo": img_filename
@@ -130,34 +145,39 @@ def registrar_avistamiento():
 
             # insertar en las tablas 'avistamiento' y 'registro'
             db.create_avistamiento(
-                voluntario_id=int(request.form.get("voluntario_id")),
+                voluntario_id=voluntario.id,
                 ave_id=int(request.form.get("ave_id")),
                 fecha_hora=fecha_hora,
                 lugar=request.form.get("lugar").strip(),
                 descripcion=request.form.get("descripcion", "").strip(),
-                archivos=archivos_procesados  # Lista de dicts para tabla 'registro'
+                archivos=archivos_procesados
             )
 
             # aviso de exito y redireccionamiento a la página de inicio
-            flash("¡Avistamiento registrado exitosamente con sus archivos multimedia!", "success")
+            flash(
+                "¡Avistamiento registrado exitosamente con sus archivos multimedia!",
+                "success"
+            )
+
             return redirect(url_for("index"))
 
         except Exception as e:
             aves = db.get_aves()
-            voluntarios = db.get_voluntarios()
+
             return render_template(
                 "registrar-avistamiento.html",
                 aves=aves,
-                voluntarios=voluntarios,
                 errores=["Ocurrió un error inesperado al procesar los archivos o la base de datos."],
                 datos_previos=request.form
             )
 
     elif request.method == "GET":
         aves = db.get_aves()
-        voluntarios = db.get_voluntarios()
-        return render_template("registrar-avistamiento.html", aves=aves, voluntarios=voluntarios)
 
+        return render_template(
+            "registrar-avistamiento.html",
+            aves=aves
+        )
 
 @app.route("/ver-avistamientos", methods=["GET"])
 def ver_avistamientos():

@@ -48,14 +48,24 @@ def validar_avistamiento(form_data, file_data):
 
     errores = []
 
-    voluntario_id = form_data.get("voluntario_id", "").strip()
+    nombre_voluntario = form_data.get("nombre_voluntario", "").strip()
+    email_voluntario = form_data.get("email_voluntario", "").strip()
     ave_id = form_data.get("ave_id", "").strip()
     fecha_hora = form_data.get("fecha_hora", "").strip()
     lugar = form_data.get("lugar", "").strip()
 
-    # validacion voluntario
-    if not voluntario_id or not voluntario_id.isdigit():
-        errores.append("Debe seleccionar un voluntario válido.")
+    # validacion nombre voluntario
+    if not nombre_voluntario:
+        errores.append("Debe ingresar el nombre del voluntario.")
+    elif len(nombre_voluntario) < 3:
+        errores.append("El nombre debe tener al menos 3 caracteres.")
+
+    # validacion email voluntario
+    patron_email = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    if not email_voluntario:
+        errores.append("Debe ingresar el correo electrónico del voluntario.")
+    elif not re.match(patron_email, email_voluntario):
+        errores.append("Debe ingresar un formato de correo electrónico válido.")
 
     # validacion ave
     if not ave_id or not ave_id.isdigit():

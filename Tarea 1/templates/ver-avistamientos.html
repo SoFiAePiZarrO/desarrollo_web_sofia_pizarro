@@ -5,119 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Listado de Avistamientos - Unión de Ornitólogos de Chile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        label, input, select, button {
-            font-size: 18px !important;
-        }
-        h3 {
-            font-size: 22px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr.fila-avistamiento {
-            cursor: pointer;
-        }
-        tr.fila-avistamiento:hover {
-            background-color: #f9f9f9;
-        }
-        .imagen-tabla {
-            max-width: 100px;
-            height: auto;
-            border-radius: 4px;
-        }
-    </style>
 </head>
 <body>
 
     <h1>Listado de Avistamientos Registrados</h1>
     <p>Publicado por la <strong>Unión de Ornitólogos de Chile</strong></p>
 
-    <p><a href="{{ url_for('inicio') }}">← Volver al Menú Principal</a></p>
+    <p><a href="{{ url_for('index') }}">← Volver al Menú Principal</a></p>
 
-    <section class="filtros-container">
-        <h2>Filtrar y Ordenar</h2>
-        
-        <div class="filter-group">
-            <label for="filtro-nombre">Buscar por nombre de ave:</label>
-            <input type="text" id="filtro-nombre" placeholder="Ej: Chincol, Cernícalo...">
+    {% if data %}
+        <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th>#</th>
+                    <th>Voluntario</th>
+                    <th>Especie de Ave</th>
+                    <th>Fecha y Hora</th>
+                    <th>Lugar</th>
+                    <th>Descripción</th>
+                    <th>Evidencia Multimedia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in data %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ item.voluntario }}</strong></td>
+                        <td><em>{{ item.ave }}</em></td>
+                        <td>{{ item.fecha_hora }}</td>
+                        <td>{{ item.lugar }}</td>
+                        <td>{{ item.descripcion if item.descripcion else 'Sin observaciones' }}</td>
+                        <td>
+                            {% if item.archivos %}
+                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                    {% for archivo_url in item.archivos %}
+                                        {% if archivo_url.endswith('.mp4') or archivo_url.endswith('.webm') or archivo_url.endswith('.mov') %}
+                                            <video width="120" height="90" controls>
+                                                <source src="{{ archivo_url }}">
+                                                Tu navegador no soporta el reproductor de video.
+                                            </video>
+                                        {% else %}
+                                            <a href="{{ archivo_url }}" target="_blank">
+                                                <img src="{{ archivo_url }}" alt="Evidencia" width="100" style="object-fit: cover; border-radius: 4px; border: 1px solid #ccc;">
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <small>Sin archivos adjuntos</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div style="margin-top: 20px; text-align: center;">
+
+            {% if pagina > 1 %}
+                <a href="{{ url_for('ver_avistamientos', pagina=pagina-1) }}">
+                    ← Anterior
+                </a>
+            {% endif %}
+
+            <span style="margin: 0 15px;">
+                Página {{ pagina }} de {{ total_paginas }}
+            </span>
+
+            {% if pagina < total_paginas %}
+                <a href="{{ url_for('ver_avistamientos', pagina=pagina+1) }}">
+                    Siguiente →
+                </a>
+            {% endif %}
+
         </div>
 
-        <div class="filter-group">
-            <label for="filtro-tipo">Tipo de Ave:</label>
-            <select id="filtro-tipo">
-                <option value="todos">Todos los tipos</option>
-                <option value="jardin-ciudad">Terrestre / Jardín o Ciudad</option>
-                <option value="marina-costera">Marina / Costera</option>
-                <option value="humedal-rio">Humedal / Laguna / Río</option>
-                <option value="rapaz">Rapaz / Caza</option>
-                <option value="bosque-cordillera">Bosque / Cordillera</option>
-            </select>
+    {% else %}
+        <div style="background-color: #e2e3e5; color: #383d41; padding: 15px; border-radius: 5px; margin-top: 20px;">
+            <p style="margin: 0;">No existen avistamientos registrados en la base de datos hasta el momento.</p>
         </div>
+    {% endif %}
 
-        <div class="filter-group">
-            <label for="ordenar-por">Ordenar por:</label>
-            <select id="ordenar-por">
-                <option value="fecha-desc">Fecha (más reciente primero)</option>
-                <option value="fecha-asc">Fecha (más antigua primero)</option>
-                <option value="lugar">Lugar / Comuna (A-Z)</option>
-                <option value="tipo">Tipo de ave (A-Z)</option>
-            </select>
-        </div>
+    <p style="margin-top: 30px;"><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
 
-        <button type="button" id="btn-filtrar">Aplicar Filtros</button>
-    </section>
-
-    <h2>Registros Encontrados</h2>
-    
-    <table id="tabla-avistamientos">
-        <thead>
-            <tr>
-                <th>Vista Previa</th>
-                <th>Nombre del Ave</th>
-                <th>Tipo</th>
-                <th>Lugar / Comuna</th>
-                <th>Fecha y Hora</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="fila-avistamiento" data-id="1">
-                <td>
-                    <img src="{{ url_for('static', filename='uploads/chincol.jpg') }}" alt="Fotografía de un Chincol" class="imagen-tabla">
-                </td>
-                <td><strong>Chincol</strong> <em>(Zonotrichia capensis)</em></td>
-                <td>Terrestre / Jardín</td>
-                <td>Santiago, Región Metropolitana</td>
-                <td>25/08/2026 10:30 hrs</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p>Página 1 de 5</p>
-    <p>
-        <a href="#">« Anterior</a> | 
-        <a href="#">1</a> | 
-        <a href="#">2</a> | 
-        <a href="#">3</a> | 
-        <a href="#">Siguiente »</a>
-    </p>
-
-    <p><small><strong>Aviso legal:</strong> El material multimedia y los datos de avistamiento publicados en esta plataforma son aportados exclusivamente por personas voluntarias registradas.</small></p>
-    <p><small>&copy; 2026 Unión de Ornitólogos de Chile.</small></p>
-
-    <!-- Scripts desde static/js/ -->
-    <script src="{{ url_for('static', filename='js/regiones-comunas.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/avistamiento.js') }}"></script>
 </body>
 </html>

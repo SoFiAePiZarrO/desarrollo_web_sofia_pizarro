@@ -5,6 +5,29 @@ const validarSeleccion = (valor) => {
 };
 
 
+// Validar nombre del voluntario
+const validarNombre = (nombre) => {
+    if (!nombre || nombre.trim().length < 3) {
+        return false;
+    }
+
+    const expresionNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    return expresionNombre.test(nombre.trim());
+};
+
+
+// Validar correo del voluntario
+const validarCorreo = (correo) => {
+    if (!correo) {
+        return false;
+    }
+
+    const expresionCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return expresionCorreo.test(correo.trim());
+};
+
+
+// Validar fecha y hora
 const validarFechaHora = (fechaHora) => {
     if (!fechaHora) {
         return false;
@@ -23,8 +46,8 @@ const validarFechaHora = (fechaHora) => {
 };
 
 
+// Validar archivos multimedia
 const validarArchivos = (entradaArchivo) => {
-
     if (
         !entradaArchivo ||
         !entradaArchivo.files ||
@@ -38,7 +61,6 @@ const validarArchivos = (entradaArchivo) => {
 
     // Revisamos todos los archivos seleccionados
     for (const archivo of entradaArchivo.files) {
-
         const esImagen = archivo.type.startsWith("image/");
         const esVideo = archivo.type.startsWith("video/");
 
@@ -58,7 +80,6 @@ const validarArchivos = (entradaArchivo) => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-
     const formulario = document.getElementById("form-avistamiento");
 
     if (!formulario) {
@@ -66,8 +87,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     formulario.addEventListener("submit", (evento) => {
-
-        const voluntario = document.getElementById("voluntario");
+        const nombreVoluntario = document.getElementById("nombre_voluntario");
+        const emailVoluntario = document.getElementById("email_voluntario");
         const ave = document.getElementById("ave");
         const fechaHora = document.getElementById("fecha_hora");
         const lugar = document.getElementById("lugar");
@@ -75,9 +96,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let errores = [];
 
-        // Voluntario
-        if (!voluntario || !validarSeleccion(voluntario.value)) {
-            errores.push("Debe seleccionar un voluntario.");
+        // Nombre del voluntario
+        if (!nombreVoluntario || !validarNombre(nombreVoluntario.value)) {
+            errores.push("Debe ingresar un nombre de voluntario válido.");
+        }
+
+        // Correo del voluntario
+        if (!emailVoluntario || !validarCorreo(emailVoluntario.value)) {
+            errores.push("Debe ingresar un correo electrónico válido.");
         }
 
         // Ave
@@ -104,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Si hay errores, impedimos el post
         if (errores.length > 0) {
-
             evento.preventDefault();
 
             alert(

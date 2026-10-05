@@ -39,7 +39,7 @@
 
     <h1>Sistema de gestión y registro de avistamientos de aves en Chile</h1>
     
-    <!-- Texto de bienvenida en lugar del subtítulo -->
+    <!-- Texto de bienvenida -->
     <p class="bienvenida-texto">
         Bienvenido al sitio de la Unión de Ornitólogos de Chile. Aquí puedes inscribirte como voluntario y registrar los avistamientos de aves que encuentres en tu zona.
     </p>
@@ -59,7 +59,7 @@
 
     <h2>Menú Principal</h2>
 
-    <!-- Bloques verticales uno al lado del otro -->
+    <!-- Menu -->
     <div class="menu-container">
         
         <fieldset class="menu-block">
@@ -112,7 +112,7 @@
                     {% for av in avistamientos %}
                         <tr>
                             <td>{{ av.fecha_hora.strftime('%d/%m/%Y %H:%M') if av.fecha_hora else 'N/I' }}</td>
-                            <td>{{ av.ave.nombre_comun if av.ave else 'Desconocida' }}</td>
+                            <td>{{ av.ave.nombre if av.ave else 'Desconocida' }}</td>
                             <td>{{ av.comuna.nombre if av.comuna else av.lugar }}</td>
                             <td>{{ av.voluntario.nombre if av.voluntario else 'Anónimo' }}</td>
                         </tr>

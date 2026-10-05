@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Exitoso - Unión de Ornitólogos de Chile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+
+
+<body>
+
+    <main class="container">
+        <section class="card success-card">
+            <div class="success-icon">✓</div>
+            <h2>¡Registro Completado con Éxito!</h2>
+            
+            {% if voluntario %}
+                <p>El voluntario <strong>{{ voluntario.nombre }}</strong> se ha registrado correctamente en el sistema.</p>
+            {% else %}
+                <p>La información ha sido guardada exitosamente en la base de datos.</p>
+            {% endif %}
+
+            <div class="actions-container">
+            <!-- Botón para registrar un avistamiento -->
+            <p>
+                <a href="{{ url_for('registrar_avistamiento') }}" class="btn btn-primary">
+                    Registrar un Avistamiento
+                </a>
+            </p>
+            <!-- Link para volver al menú principal -->
+            <p>
+                <a href="{{ url_for('index') }}">
+                    ← Volver al Menú Principal
+                </a>
+            </p>
+        </div>
+        </section>
+    </main>
+
+</body>
+</html>
