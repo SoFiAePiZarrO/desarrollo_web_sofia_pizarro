@@ -284,3 +284,27 @@ def get_avistamientos_por_ave():
 
     finally:
         session.close()
+
+
+# Obtiene la cantidad de voluntarios registrados por comuna
+def get_voluntarios_por_comuna():
+    session = SessionLocal()
+
+    try:
+        resultados = (
+            session.query(
+                Comuna.nombre,
+                func.count(Voluntario.id)
+            )
+            .join(Voluntario)
+            .group_by(Comuna.id, Comuna.nombre)
+            .all()
+        )
+
+        return [
+            {"comuna": nombre, "cantidad": cantidad}
+            for nombre, cantidad in resultados
+        ]
+
+    finally:
+        session.close()

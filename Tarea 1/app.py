@@ -241,5 +241,9 @@ def datos_avistamientos_dia():
 def datos_avistamientos_ave():
     return jsonify(db.get_avistamientos_por_ave())
 
+@app.route("/datos-voluntarios-comuna")
+def datos_voluntarios_comuna():
+    return jsonify(db.get_voluntarios_por_comuna())
+
 if __name__ == "__main__":
     app.run(debug=True)

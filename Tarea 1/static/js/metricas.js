@@ -40,3 +40,30 @@ fetch("/datos-avistamientos-ave")
             }
         });
     });
+
+
+// Gráfico de voluntarios por comuna
+fetch("/datos-voluntarios-comuna")
+    .then(response => response.json())
+    .then(datos => {
+
+        const barras = datos.map((d, i) => [i, d.cantidad]);
+        const comunas = datos.map((d, i) => [i, d.comuna]);
+
+        $.plot("#grafico-barras", [
+            {
+                data: barras,
+                color: "green",
+                bars: { show: true, barWidth: 0.6, align: "center" }
+            }
+        ], {
+            xaxis: {
+                ticks: comunas
+            },
+            yaxis: {
+                min: 0,
+                tickSize: 1,
+                tickDecimals: 0
+            }
+        });
+    });
