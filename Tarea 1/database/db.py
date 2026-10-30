@@ -260,3 +260,27 @@ def get_avistamientos_por_dia():
 
     finally:
         session.close()
+
+
+# Obtiene la cantidad de avistamientos por ave
+def get_avistamientos_por_ave():
+    session = SessionLocal()
+
+    try:
+        resultados = (
+            session.query(
+                Ave.nombre,
+                func.count(Avistamiento.id)
+            )
+            .join(Avistamiento)
+            .group_by(Ave.id, Ave.nombre)
+            .all()
+        )
+
+        return [
+            {"label": nombre, "data": cantidad}
+            for nombre, cantidad in resultados
+        ]
+
+    finally:
+        session.close()

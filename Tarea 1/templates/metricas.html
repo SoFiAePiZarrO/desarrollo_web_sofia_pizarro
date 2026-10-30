@@ -12,12 +12,15 @@
 
     <h2>Avistamientos por día</h2>
     <div id="grafico-lineas" style="width: 700px; height: 400px; max-width: 100%;"></div>
+    <h2>Avistamientos por tipo de ave</h2>
+    <div id="grafico-torta" style="width: 700px; height: 400px; max-width: 100%;"></div>
 
     <p><a href="{{ url_for('index') }}">Volver al inicio</a></p>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flot@4.2.6/dist/es5/jquery.flot.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flot@4.2.6/source/jquery.flot.time.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flot@4.2.6/source/jquery.flot.pie.js"></script>
     <script src="{{ url_for('static', filename='js/metricas.js') }}"></script>
 
 </body>

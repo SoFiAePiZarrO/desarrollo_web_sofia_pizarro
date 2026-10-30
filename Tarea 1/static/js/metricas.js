@@ -28,3 +28,15 @@ fetch("/datos-avistamientos-dia")
             }
         });
     });
+
+
+// Gráfico de avistamientos por tipo de ave
+fetch("/datos-avistamientos-ave")
+    .then(response => response.json())
+    .then(datos => {
+        $.plot("#grafico-torta", datos, {
+            series: {
+                pie: { show: true }
+            }
+        });
+    });

@@ -237,5 +237,9 @@ def datos_avistamientos_dia():
     datos = db.get_avistamientos_por_dia()
     return jsonify(datos)
 
+@app.route("/datos-avistamientos-ave")
+def datos_avistamientos_ave():
+    return jsonify(db.get_avistamientos_por_ave())
+
 if __name__ == "__main__":
     app.run(debug=True)
