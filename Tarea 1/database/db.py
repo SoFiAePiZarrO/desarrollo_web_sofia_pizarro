@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, func
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload
 
 # credenciales
@@ -231,6 +231,32 @@ def get_voluntario_by_nombre_email(nombre, email):
         )
 
         return voluntario
+
+    finally:
+        session.close()
+
+# Obtiene la cantidad de avistamientos registrados por día
+def get_avistamientos_por_dia():
+    session = SessionLocal()
+
+    try:
+        resultados = (
+            session.query(
+                func.date(Avistamiento.fecha_hora),
+                func.count(Avistamiento.id)
+            )
+            .group_by(func.date(Avistamiento.fecha_hora))
+            .order_by(func.date(Avistamiento.fecha_hora))
+            .all()
+        )
+
+        return [
+            {
+                "fecha": str(fecha),
+                "cantidad": cantidad
+            }
+            for fecha, cantidad in resultados
+        ]
 
     finally:
         session.close()

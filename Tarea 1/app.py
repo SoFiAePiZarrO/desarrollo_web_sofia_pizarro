@@ -231,5 +231,11 @@ def get_comunas(region_id):
         } for c in comunas
     ])
 
+# Entrega los avistamientos agrupados por día en formato JSON
+@app.route("/datos-avistamientos-dia")
+def datos_avistamientos_dia():
+    datos = db.get_avistamientos_por_dia()
+    return jsonify(datos)
+
 if __name__ == "__main__":
     app.run(debug=True)
