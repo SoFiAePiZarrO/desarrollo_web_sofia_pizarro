@@ -24,6 +24,7 @@
                     <th>Lugar</th>
                     <th>Descripción</th>
                     <th>Evidencia Multimedia</th>
+                    <th>Detalle</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,6 +55,11 @@
                             {% else %}
                                 <small>Sin archivos adjuntos</small>
                             {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('detalle_avistamiento', avistamiento_id=item.id) }}">
+                                Ver detalle
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}

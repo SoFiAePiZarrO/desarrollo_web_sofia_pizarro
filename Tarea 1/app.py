@@ -214,6 +214,16 @@ def ver_avistamientos():
         total_paginas=total_paginas
     )
 
+# Muestra la información de un avistamiento específico
+@app.route("/avistamiento/<int:avistamiento_id>")
+def detalle_avistamiento(avistamiento_id):
+    avistamiento = db.get_avistamiento_by_id(avistamiento_id)
+
+    if avistamiento is None:
+        return "Avistamiento no encontrado", 404
+
+    return render_template("detalle-avistamiento.html", avistamiento=avistamiento)
+
 @app.route("/metricas", methods=["GET"])
 def metricas():
     return render_template("metricas.html")

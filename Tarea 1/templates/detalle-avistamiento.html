@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Avistamiento</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <h1>Detalle del Avistamiento</h1>
+
+    <p><strong>Voluntario:</strong> {{ avistamiento.voluntario.nombre }}</p>
+    <p><strong>Especie:</strong> {{ avistamiento.ave.nombre }}</p>
+    <p><strong>Fecha y hora:</strong> {{ avistamiento.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+    <p><strong>Lugar:</strong> {{ avistamiento.lugar }}</p>
+    <p><strong>Descripción:</strong> {{ avistamiento.descripcion or 'Sin observaciones' }}</p>
+
+    <h2>Evidencia Multimedia</h2>
+
+    {% for archivo in avistamiento.registros %}
+        {% if archivo.ruta_archivo.endswith(('.mp4', '.webm', '.mov')) %}
+            <video width="300" controls>
+                <source src="{{ url_for('static', filename=archivo.ruta_archivo) }}">
+            </video>
+        {% else %}
+            <img src="{{ url_for('static', filename=archivo.ruta_archivo) }}"
+                 alt="Evidencia del avistamiento" width="300">
+        {% endif %}
+    {% else %}
+        <p>Sin archivos adjuntos.</p>
+    {% endfor %}
+
+    <p><a href="{{ url_for('ver_avistamientos') }}">← Volver al Listado de Avistamientos</a></p>
+    <p><a href="{{ url_for('index') }}">← Volver al Menú Principal</a></p>
+
+</body>
+</html>

@@ -308,3 +308,25 @@ def get_voluntarios_por_comuna():
 
     finally:
         session.close()
+
+
+# Obtiene un avistamiento según su ID
+def get_avistamiento_by_id(avistamiento_id):
+    session = SessionLocal()
+
+    try:
+        avistamiento = (
+            session.query(Avistamiento)
+            .options(
+                joinedload(Avistamiento.ave),
+                joinedload(Avistamiento.voluntario),
+                joinedload(Avistamiento.registros)
+            )
+            .filter_by(id=avistamiento_id)
+            .first()
+        )
+
+        return avistamiento
+
+    finally:
+        session.close()
