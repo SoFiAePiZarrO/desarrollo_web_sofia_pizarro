@@ -19,12 +19,16 @@ fetch("/datos-avistamientos-dia")
             xaxis: {
             mode: "time",
             timeBase: "milliseconds",
-            timeformat: "%d/%m/%y"
+            timeformat: "%d/%m/%y",
+            axisLabel: "Fecha",
+            axisLabelUseCanvas: true
             },
             yaxis: {
                 min: 0,
                 tickSize: 1,
-                tickDecimals: 0
+                tickDecimals: 0,
+                axisLabel: "Cantidad de avistamientos",
+                axisLabelUseCanvas: true
             }
         });
     });
@@ -58,12 +62,16 @@ fetch("/datos-voluntarios-comuna")
             }
         ], {
             xaxis: {
-                ticks: comunas
+                ticks: comunas,
+                axisLabel: "Comuna",
+                axisLabelUseCanvas: true
             },
             yaxis: {
                 min: 0,
                 tickSize: 1,
-                tickDecimals: 0
+                tickDecimals: 0,
+                axisLabel: "Cantidad de voluntarios",
+                axisLabelUseCanvas: true
             }
         });
     });
