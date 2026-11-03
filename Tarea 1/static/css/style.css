@@ -99,7 +99,8 @@ button[type="submit"]:hover {
 
 /* Errores */
 input.input-error,
-select.input-error {
+select.input-error,
+textarea.input-error {
   border-color: #d32f2f;
 }
 

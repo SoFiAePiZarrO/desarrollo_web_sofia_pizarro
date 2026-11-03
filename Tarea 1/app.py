@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, flash
 from database import db
-from utils.validaciones import validar_voluntario, validar_avistamiento
+from utils.validaciones import validar_voluntario, validar_avistamiento, validar_comentario
 from werkzeug.utils import secure_filename
 import hashlib
 import filetype
@@ -223,6 +223,29 @@ def detalle_avistamiento(avistamiento_id):
         return "Avistamiento no encontrado", 404
 
     return render_template("detalle-avistamiento.html", avistamiento=avistamiento)
+
+# Obtiene los comentarios de un avistamiento
+@app.route("/comentarios/<int:avistamiento_id>")
+def obtener_comentarios(avistamiento_id):
+    comentarios = db.get_comentarios_by_avistamiento(avistamiento_id)
+    return jsonify(comentarios)
+
+# Guarda un comentario de un avistamiento
+@app.route("/comentarios/<int:avistamiento_id>", methods=["POST"])
+def guardar_comentario(avistamiento_id):
+    datos = request.get_json()
+    errores = validar_comentario(datos)
+
+    if errores:
+        return jsonify({"errores": errores}), 400
+
+    db.create_comentario(
+        nombre=datos.get("nombre").strip(),
+        texto=datos.get("texto").strip(),
+        avistamiento_id=avistamiento_id
+    )
+
+    return jsonify({"mensaje": "Comentario guardado correctamente"})
 
 @app.route("/metricas", methods=["GET"])
 def metricas():

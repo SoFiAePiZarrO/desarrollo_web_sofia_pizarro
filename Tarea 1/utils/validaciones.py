@@ -108,3 +108,19 @@ def validar_avistamiento(form_data, file_data):
         errores.append("Debe adjuntar una fotografía o vídeo del avistamiento.")
 
     return errores
+
+
+# Valida los datos de un comentario
+def validar_comentario(form_data):
+    errores = []
+
+    nombre = form_data.get("nombre", "").strip()
+    texto = form_data.get("texto", "").strip()
+
+    if len(nombre) < 3 or len(nombre) > 50:
+        errores.append("El nombre debe tener entre 3 y 50 caracteres.")
+
+    if len(texto) < 5:
+        errores.append("El comentario debe tener al menos 5 caracteres.")
+
+    return errores

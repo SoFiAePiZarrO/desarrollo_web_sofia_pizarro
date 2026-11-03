@@ -31,8 +31,35 @@
         <p>Sin archivos adjuntos.</p>
     {% endfor %}
 
+    <h2>Comentarios</h2>
+
+    <div id="lista-comentarios"></div>
+
+
+    <form id="form-comentario" novalidate>
+        <h3>Agregar comentario</h3>
+
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre"
+            minlength="3" maxlength="50" required>
+        <span id="error-nombre"></span>
+
+        <label for="texto">Comentario:</label>
+        <textarea id="texto" name="texto"
+                rows="3" cols="40" minlength="5" required></textarea>
+        <span id="error-texto"></span>
+
+        <button type="submit">Enviar comentario</button>
+    </form>
+
     <p><a href="{{ url_for('ver_avistamientos') }}">← Volver al Listado de Avistamientos</a></p>
     <p><a href="{{ url_for('index') }}">← Volver al Menú Principal</a></p>
+    
+    <script>
+    const avistamientoId = {{ avistamiento.id }};
+    </script>
+
+    <script src="{{ url_for('static', filename='js/comentarios.js') }}"></script>
 
 </body>
 </html>

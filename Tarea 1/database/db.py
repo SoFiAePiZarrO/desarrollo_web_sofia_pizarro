@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, func
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship, joinedload
+from datetime import datetime
 
 # credenciales
 DB_NAME = "tarea2"
@@ -72,6 +73,7 @@ class Avistamiento(Base):
     voluntario = relationship("Voluntario", back_populates="avistamientos")
     ave = relationship("Ave", back_populates="avistamientos")
     registros = relationship("Registro", back_populates="avistamiento")
+    comentarios = relationship("Comentario", back_populates="avistamiento")
 
 
 class Registro(Base):
@@ -85,7 +87,17 @@ class Registro(Base):
     avistamiento = relationship("Avistamiento", back_populates="registros")
 
 
-# --- Database Functions ---
+class Comentario(Base):
+    __tablename__ = 'comentario'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime, nullable=False)
+    avistamiento_id = Column(Integer, ForeignKey('avistamiento.id'), nullable=False)
+
+    avistamiento = relationship("Avistamiento", back_populates="comentarios")
+
 
 # Pide a la base de datos todas las aves para el registro de avistamientos
 def get_aves():
@@ -327,6 +339,49 @@ def get_avistamiento_by_id(avistamiento_id):
         )
 
         return avistamiento
+
+    finally:
+        session.close()
+
+# Guarda un comentario asociado a un avistamiento
+def create_comentario(nombre, texto, avistamiento_id):
+    session = SessionLocal()
+
+    try:
+        nuevo_comentario = Comentario(
+            nombre=nombre,
+            texto=texto,
+            fecha=datetime.now(),
+            avistamiento_id=avistamiento_id
+        )
+
+        session.add(nuevo_comentario)
+        session.commit()
+
+    finally:
+        session.close()
+
+
+# Obtiene los comentarios de un avistamiento
+def get_comentarios_by_avistamiento(avistamiento_id):
+    session = SessionLocal()
+
+    try:
+        comentarios = (
+            session.query(Comentario)
+            .filter_by(avistamiento_id=avistamiento_id)
+            .order_by(Comentario.fecha.asc())
+            .all()
+        )
+
+        return [
+            {
+                "nombre": c.nombre,
+                "texto": c.texto,
+                "fecha": c.fecha.strftime("%d/%m/%Y %H:%M")
+            }
+            for c in comentarios
+        ]
 
     finally:
         session.close()
