@@ -1,7 +1,7 @@
 
 package cl.sofia.tarea4.controller;
 
-import cl.sofia.tarea4.entity.Avistamiento;
+import cl.sofia.tarea4.dto.AvistamientoDTO;
 import cl.sofia.tarea4.service.AvistamientoService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -18,7 +18,7 @@ public class AvistamientoController {
     }
 
     @GetMapping("/buscar")
-    public List<Avistamiento> buscar(@RequestParam String texto) {
+    public List<AvistamientoDTO> buscar(@RequestParam String texto) {
         return avistamientoService.buscar(texto);
     }
 }
