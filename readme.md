@@ -1,52 +1,122 @@
-# Tarea 3 - Desarrollo de Aplicaciones Web
+# Tarea 4
 
 ## Descripción
 
-Este proyecto corresponde a la continuación de la Tarea 2, en la que se desarrolló una aplicación para el registro de avistamientos de aves. En esta etapa se agregaron nuevas funcionalidades, principalmente la visualización de estadísticas mediante gráficos y la posibilidad de agregar comentarios a los avistamientos registrados.
+En esta tarea se incorporan nuevas funcionalidades al proyecto de avistamientos de aves desarrollado en las tareas anteriores. Para ello, se implementa un backend utilizando **Spring Boot**, que se integra con la aplicación existente desarrollada en Flask.
 
-## Nuevas funcionalidades
+Las nuevas funcionalidades permiten buscar avistamientos de manera dinámica y evaluar los registros con notas.
 
-Se incorporó una página de métricas e indicadores que permite visualizar información de los avistamientos y voluntarios mediante tres gráficos: cantidad de avistamientos por día, cantidad de avistamientos por especie de ave y cantidad de voluntarios por comuna. Para esto se utilizó la biblioteca Flot, obteniendo los datos directamente desde la base de datos a través de rutas implementadas en Flask.
+## Funcionalidades implementadas
 
-También se agregó una sección de comentarios en la página de detalle de cada avistamiento. Esta permite ingresar un nombre y un comentario, que queda asociado al avistamiento correspondiente. Los comentarios registrados se muestran junto con la fecha, el nombre de quien comenta y el texto ingresado. Para implementar esta funcionalidad se agregó la tabla `comentario` a la base de datos.
+### 1. Búsqueda de avistamientos
 
-Para actualizar la información sin tener que recargar la página se utilizó `fetch()` en JavaScript. Esta función permite realizar solicitudes a Flask y recibir respuestas en formato JSON. En este caso, se utiliza para obtener los comentarios de un avistamiento y para enviar nuevos comentarios al servidor, actualizando posteriormente su contenido en la página.
+Se incorpora un buscador que permite encontrar avistamientos a medida que el usuario escribe en el campo de búsqueda.
 
-Además, se incorporaron validaciones tanto en JavaScript como en el servidor. En JavaScript se revisan los datos ingresados antes de enviarlos, mostrando los errores correspondientes en el formulario. Por otro lado, en el servidor se vuelven a validar mediante las funciones implementadas en `utils/validaciones.py`, que son utilizadas desde `app.py`. Para los comentarios, se comprueba que el nombre tenga entre 3 y 50 caracteres y que el texto tenga al menos 5 caracteres.
+La búsqueda considera coincidencias en:
+- Nombre del voluntario.
+- Nombre del ave.
+- Nombre de la comuna de registro del voluntario.
 
-## Instalación y ejecución
+**Consideración sobre la comuna:** la búsqueda utiliza la comuna asociada al voluntario y no la comuna donde ocurrió el avistamiento. Esto se debe a la estructura actual de la base de datos, donde la tabla `avistamiento` no tiene una relación directa con la tabla `comuna`. La comuna se obtiene a través de la relación entre `avistamiento`, `voluntario` y `comuna`.
 
-Para ejecutar el proyecto se necesita tener instalado Python y MySQL Server. Primero se debe crear la base de datos `tarea2` en MySQL e importar los archivos SQL disponibles en la carpeta `database`, que contienen las instrucciones para crear las tablas y cargar los datos correspondientes.
+Los resultados muestran el nombre del voluntario, la fecha del avistamiento, el nombre del ave, la comuna y su evaluación promedio. Además, se destaca el texto que coincide con la búsqueda.
 
-Desde la carpeta `Tarea 1`, se debe crear un entorno virtual e instalar las dependencias del proyecto:
+La búsqueda se realiza de manera asíncrona mediante JavaScript y `fetch`, sin necesidad de recargar la página.
 
-```bash
-python -m venv venv
-```
+### 2. Evaluación de avistamientos
 
-En Windows, si se utiliza PowerShell, puede ser necesario permitir la ejecución de scripts durante la sesión actual y luego activar el entorno virtual:
+Cada resultado de búsqueda permite ingresar una evaluación mediante una nota entera entre 1 y 7.
+
+Las evaluaciones:
+- Se almacenan en una nueva tabla llamada `nota`, asociada a cada avistamiento.
+- Validan que la nota ingresada esté dentro del rango permitido.
+- Permiten registrar múltiples evaluaciones para un mismo avistamiento.
+- Calculan el promedio de las evaluaciones registradas.
+
+Una vez guardada una evaluación, el promedio se actualiza directamente en la interfaz, sin recargar la página.
+
+## Backend con Spring Boot
+
+Se creó un nuevo proyecto backend utilizando **Java 17, Spring Boot, Spring Data JPA y MySQL**.
+
+El backend se encarga de realizar las consultas de búsqueda, gestionar las evaluaciones y calcular los promedios.
+
+Su estructura se organiza en los siguientes paquetes:
+
+- `entity`: entidades que representan las tablas de la base de datos.
+- `repository`: repositorios para acceder a los datos mediante Spring Data JPA.
+- `service`: lógica de las funcionalidades implementadas.
+- `controller`: endpoints que reciben las solicitudes HTTP.
+- `dto`: objetos utilizados para entregar los resultados de búsqueda.
+
+La comunicación entre la aplicación Flask y el backend Spring Boot se realiza mediante solicitudes HTTP asíncronas desde JavaScript.
+
+## Endpoints del backend
+
+El backend expone los siguientes endpoints para realizar las operaciones de búsqueda y evaluación:
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/avistamientos/buscar` | Busca avistamientos según el texto ingresado. |
+| POST | `/api/notas` | Registra una evaluación y devuelve el promedio actualizado. |
+
+### Búsqueda de avistamientos
+
+**GET** `/api/avistamientos/buscar?texto={texto}`
+
+Recibe el texto ingresado en el buscador y devuelve una lista de avistamientos que coinciden con el nombre del ave, el nombre del voluntario o la comuna de registro del voluntario.
+
+### Registro de evaluaciones
+
+**POST** `/api/notas?avistamientoId={id}&nota={nota}`
+
+Recibe el identificador del avistamiento y la nota asignada (entero entre 1 y 7). Guarda la evaluación en la base de datos y devuelve el promedio actualizado del avistamiento.
+
+Si la nota está fuera del rango permitido o el avistamiento no existe, devuelve un error HTTP 400.
+
+## Consideraciones y mejoras futuras
+
+Una mejora que sería interesante incorporar al sistema de evaluaciones es permitir que cada usuario pueda evaluar un avistamiento una sola vez y modificar su evaluación posteriormente. Esto permitiría evitar votos repetidos y contribuiría a que los promedios representen de mejor manera la opinión de distintos usuarios.
+
+Sin embargo, esta funcionalidad no fue implementada debido a que el proyecto todavía no cuenta con un servicio de inicio de sesión. Sin un mecanismo para identificar a los usuarios, no es posible garantizar que cada persona pueda emitir una sola evaluación por avistamiento.
+
+## Ejecución del proyecto
+
+Para utilizar las nuevas funcionalidades es necesario ejecutar tanto la aplicación Flask como el backend Spring Boot.
+
+### Requisitos
+
+- Python y Flask.
+- Java 17.
+- MySQL.
+
+### Base de datos
+
+Se utiliza la base de datos `tarea2`, correspondiente al proyecto desarrollado anteriormente.
+
+Para habilitar las evaluaciones, se debe ejecutar el script `Tarea 1/database/tabla-nota.sql` en MySQL. Este crea la tabla `nota`, que almacena las evaluaciones asociadas a los avistamientos.
+
+También es necesario verificar la configuración de conexión a MySQL en `Tarea 4/backend/src/main/resources/application.properties`.
+
+### Iniciar el backend Spring Boot
+
+Desde una terminal, ubicarse en la carpeta `Tarea 4/backend` y ejecutar:
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\mvnw.cmd spring-boot:run
+```
+
+El backend estará disponible en `http://localhost:8080`.
+
+### Iniciar la aplicación Flask
+
+Desde otra terminal, ubicarse en la carpeta `Tarea 1`, activar el entorno virtual e iniciar la aplicación:
+
+```powershell
 .\venv\Scripts\Activate.ps1
-```
-
-Una vez activado, instalar las dependencias con:
-
-```bash
-pip install -r requirements.txt
-```
-
-Finalmente, desde la misma carpeta se ejecuta la aplicación:
-
-```bash
 python app.py
 ```
 
-La aplicación estará disponible en:
+La aplicación estará disponible en `http://localhost:5000`.
 
-    http://127.0.0.1:5000/
-    
-## Consideraciones
-
-La base de datos no se encuentra incluida directamente en el repositorio, por lo que es necesario crearla e importar los archivos SQL antes de ejecutar la aplicación. Los registros de avistamientos, voluntarios y comentarios deben ingresarse para probar las distintas funcionalidades. Los archivos multimedia que se adjuntan a los avistamientos se almacenan en `static/uploads/`.
+Una vez iniciados ambos servidores, se puede acceder al listado de avistamientos desde `http://localhost:5000/ver-avistamientos`.
