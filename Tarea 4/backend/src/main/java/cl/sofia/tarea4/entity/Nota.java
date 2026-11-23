@@ -28,4 +28,12 @@ public class Nota {
     public Integer getNota() {
         return nota;
     }
+
+    public void setAvistamiento(Avistamiento avistamiento) {
+        this.avistamiento = avistamiento;
+    }
+
+    public void setNota(Integer nota) {
+        this.nota = nota;
+    }
 }
